@@ -1,0 +1,30 @@
+@using Microsoft.AspNetCore.Components.Web
+@inherits ProductListBase
+
+
+<div>
+    <div class="card-columns">
+        @foreach (var product in ProductService.GetProducts())
+        {
+            <div class="card">
+                <div class="card-img" style="background-image: url('@product.Image');">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">@product.Title</h5>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        <button @onclick="(e => SelectProduct(product.Id))"
+                                data-toggle="modal" data-target="#productModal" class="btn btn-primary">
+                            Info
+                        </button>
+                        <button class="btn btn-primary">Share</button>
+                        <button class="btn btn-primary">Add to cart</button>
+                    </small>
+                </div>
+            </div>
+        }
+    </div>
+
+        <ProductModal Product="@selectedProduct" SubmitRating="@SubmitRating"></ProductModal>
+</div>

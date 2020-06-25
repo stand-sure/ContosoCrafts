@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ContosoCrafts.ProductsApi.Models;
+﻿using System.Threading.Tasks;
 using ContosoCrafts.ProductsApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ContosoCrafts.ProductsApi.Controllers
 {
@@ -15,22 +10,22 @@ namespace ContosoCrafts.ProductsApi.Controllers
     {
         public ProductsController(IProductService productService)
         {
-            ProductService = productService;
+            _productService = productService;
         }
 
-        public IProductService ProductService { get; }
+        private readonly IProductService _productService;
 
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            var result = await ProductService.GetProducts();
+            var result = await _productService.GetProducts();
             return Ok(result);
         }
 
         [HttpPatch]
         public ActionResult Patch([FromBody] RatingRequest request)
         {
-            ProductService.AddRating(request.ProductId, request.Rating);
+            _productService.AddRating(request.ProductId, request.Rating);
 
             return Ok();
         }

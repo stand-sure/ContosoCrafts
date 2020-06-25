@@ -1,6 +1,5 @@
 using ContosoCrafts.WebSite.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,10 +20,10 @@ namespace ContosoCrafts.WebSite
             services.AddServerSideBlazor();
             services.AddHttpClient();
             services.AddControllers();
-            services.AddTransient<JsonFileProductService>();
+            services.AddSingleton<JsonFileProductService>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseExceptionHandler("/Error");
             // See https://aka.ms/aspnetcore-hsts.
