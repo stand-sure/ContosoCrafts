@@ -8,10 +8,31 @@
             "name": "Launch ContosoCrafts.WebSite",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/bin/Debug/netcoreapp3.1/ContosoCrafts.WebSite.dll",
+            "preLaunchTask": "build webit",
+            "program": "${workspaceFolder}/src/ContosoCrafts.WebSite/bin/Debug/netcoreapp3.1/ContosoCrafts.WebSite.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/ContosoCrafts.WebSite",
+            "stopAtEntry": false,
+            // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": "Launch ContosoCrafts.ProductsApi",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build api",
+            "program": "${workspaceFolder}/src/ContosoCrafts.ProductsApi/bin/Debug/netcoreapp3.1/ContosoCrafts.ProductsApi.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/ContosoCrafts.ProductsApi",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {

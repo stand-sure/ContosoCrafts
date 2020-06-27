@@ -16,17 +16,23 @@ namespace ContosoCrafts.ProductsApi.Controllers
         private readonly IProductService _productService;
 
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public async Task<ActionResult> GetList(int page = 1, int limit = 20)
         {
-            var result = await _productService.GetProducts();
+            var result = await _productService.GetProducts(page, limit);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetSingle(string id)
+        {
+            var result = await _productService.GetSingle(id);
             return Ok(result);
         }
 
         [HttpPatch]
-        public ActionResult Patch([FromBody] RatingRequest request)
+        public async Task<ActionResult> Patch(RatingRequest request)
         {
-            _productService.AddRating(request.ProductId, request.Rating);
-
+            await _productService.AddRating(request.ProductId, request.Rating);
             return Ok();
         }
 
