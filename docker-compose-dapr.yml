@@ -1,0 +1,106 @@
+version: "3.7"
+
+services:
+  #####  Website & DAPR Sidecar #####
+  website:
+    build:
+      context: ./src/ContosoCrafts.WebSite
+      dockerfile: Dockerfile
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    ports:
+      - "80:80"
+      - "443:443"
+
+  website_dapr:
+    image: "daprio/daprd:0.8.0"
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "website",
+        "-app-port",
+        "80",
+        "-placement-address",
+        "placement:6000",
+        "-dapr-http-port",
+        "6100",
+        "-dapr-grpc-port",
+        "6101",
+        "-components-path",
+        "/components",
+      ]
+    volumes:
+      - "./components/:/components"
+    depends_on:
+      - website
+    network_mode: "service:website"
+
+  #####  API & DAPR Sidecar #####
+  productsapi:
+    build:
+      context: ./src/ContosoCrafts.ProductsApi
+      dockerfile: Dockerfile
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    ports:
+      - "90:80"
+      - "91:443"
+    depends_on:
+      - mongodb
+
+  productsapi_dapr:
+    image: "daprio/daprd:0.8.0"
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "productsapi",
+        "-app-port",
+        "80",
+        "-placement-address",
+        "placement:6000",
+        "-dapr-http-port",
+        "6200",
+        "-dapr-grpc-port",
+        "6201",
+        "-components-path",
+        "/components",
+      ]
+    volumes:
+      - "./components/:/components"
+    depends_on:
+      - website
+    network_mode: "service:productsapi"
+
+  #####  MongoDB #####
+  mongodb:
+    container_name: mongo_service
+    image: mongo:4.2.8
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=contosocrafts
+    volumes:
+      - ./productdata/products.json:/data/products.json
+      - ./productdata/populate.sh:/docker-entrypoint-initdb.d/populate.sh
+    ports:
+      - "27017:27017"
+
+  ##### Dapr Services #####
+  placement:
+    image: "daprio/placement:0.8.0"
+    container_name: "placement"
+    command: ["./placement", "-port", "6000"]
+    ports:
+      - "6000:6000"
+
+  redis:
+    image: "redis:6.0.5-alpine"
+    ports:
+      - "6379:6379"
+
+networks:
+  default:
+    name: dapr_network
+    driver: bridge
