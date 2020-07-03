@@ -29,7 +29,7 @@ namespace ContosoCrafts.WebSite
             // See https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
