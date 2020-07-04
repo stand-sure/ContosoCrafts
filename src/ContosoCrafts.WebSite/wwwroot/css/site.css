@@ -6,6 +6,28 @@
   cursor: pointer;
 }
 
+a .fa-shopping-cart {
+  color: white;
+}
+
+.fa[data-count]{
+  position:relative;
+}
+.fa[data-count]:after{
+  position: absolute;
+  right: -0.75em;
+  top: -.75em;
+  content: attr(data-count);
+  padding: .4em;
+  border-radius: 10em;
+  line-height: .9em;
+  color: white;
+  background: rgba(255,0,0,.75);
+  text-align: center;
+  min-width: 2em;
+  font: bold .4em sans-serif;
+}
+
 /* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 .card-columns .card:hover .card-img {

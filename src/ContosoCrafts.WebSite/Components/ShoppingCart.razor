@@ -1,0 +1,28 @@
+@inject EventAggregator.Blazor.IEventAggregator Aggregator
+@implements EventAggregator.Blazor.IHandle<ShoppingCartUpdated>
+@implements IDisposable
+
+<a class="navbar-brand fa-lg" asp-area="" asp-page="/Index">
+    <i class="fa fa-shopping-cart" data-count="@shoppingCartCount" aria-hidden="true"></i>
+</a>
+
+@code {
+    int shoppingCartCount = 0;
+
+    protected override void OnInitialized()
+    {
+        Aggregator.Subscribe(this);
+    }
+
+    public Task HandleAsync(ShoppingCartUpdated cartUpdated)
+    {
+        shoppingCartCount = cartUpdated.ItemCount;
+        InvokeAsync(() => StateHasChanged());
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Aggregator.Unsubscribe(this);
+    }
+}

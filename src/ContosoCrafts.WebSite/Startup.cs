@@ -1,4 +1,5 @@
 using ContosoCrafts.WebSite.Services;
+using EventAggregator.Blazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ namespace ContosoCrafts.WebSite
             services.AddServerSideBlazor();
             services.AddHttpClient();
             services.AddControllers();
+            services.AddScoped<IEventAggregator, EventAggregator.Blazor.EventAggregator>();
             services.AddSingleton<JsonFileProductService>();
         }
 
