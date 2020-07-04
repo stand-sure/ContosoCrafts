@@ -6,6 +6,7 @@ services:
     build:
       context: ./src/ContosoCrafts.WebSite
       dockerfile: Dockerfile
+    container_name: contoso_website
     volumes:
       - ~/.aspnet/https:/https:ro
     ports:
@@ -23,10 +24,6 @@ services:
         "80",
         "-placement-address",
         "placement:6000",
-        "-dapr-http-port",
-        "6100",
-        "-dapr-grpc-port",
-        "6101",
         "-components-path",
         "/components",
       ]
@@ -34,6 +31,7 @@ services:
       - "./components/:/components"
     depends_on:
       - website
+      - redis
     network_mode: "service:website"
 
   #####  API & DAPR Sidecar #####
@@ -60,10 +58,6 @@ services:
         "80",
         "-placement-address",
         "placement:6000",
-        "-dapr-http-port",
-        "6200",
-        "-dapr-grpc-port",
-        "6201",
         "-components-path",
         "/components",
       ]
@@ -71,6 +65,7 @@ services:
       - "./components/:/components"
     depends_on:
       - website
+      - redis
     network_mode: "service:productsapi"
 
   #####  MongoDB #####
@@ -96,9 +91,13 @@ services:
       - "6000:6000"
 
   redis:
+    container_name: "redis_service"
     image: "redis:6.0.5-alpine"
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     ports:
       - "6379:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
 
 networks:
   default:
