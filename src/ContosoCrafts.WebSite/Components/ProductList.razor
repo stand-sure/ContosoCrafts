@@ -1,6 +1,4 @@
-@using Microsoft.AspNetCore.Components.Web
 @inherits ProductListBase
-
 
 <div>
     <div class="card-columns">
@@ -19,7 +17,9 @@
                             Info
                         </button>
                         <button class="btn btn-primary">Share</button>
-                        <button class="btn btn-primary">Add to cart</button>
+                        <button class="btn btn-primary" @onclick="(e => AddToCart(product.Id))">
+                            Add to cart
+                        </button>
                     </small>
                 </div>
             </div>
