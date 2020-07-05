@@ -1,3 +1,4 @@
+using System;
 using ContosoCrafts.WebSite.Services;
 using EventAggregator.Blazor;
 using Microsoft.AspNetCore.Builder;
@@ -19,7 +20,11 @@ namespace ContosoCrafts.WebSite
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddHttpClient();
+            services.AddHttpClient("dapr", c =>
+            {
+                c.BaseAddress = new Uri("http://localhost:3500");
+                c.DefaultRequestHeaders.Add("User-Agent", typeof(Program).Assembly.GetName().Name);
+            });
             services.AddControllers();
             services.AddScoped<IEventAggregator, EventAggregator.Blazor.EventAggregator>();
             services.AddSingleton<JsonFileProductService>();

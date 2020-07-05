@@ -1,4 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ContosoCrafts.WebSite.Events;
 using ContosoCrafts.WebSite.Models;
@@ -14,11 +19,14 @@ namespace ContosoCrafts.WebSite.Components
         protected JsonFileProductService ProductService { get; set; }
 
         [Inject]
-        private IEventAggregator _eventAggregator { get; set; }
+        private IEventAggregator EventAggregator { get; set; }
+
+        [Inject]
+        private IHttpClientFactory ClientFactory { get; set; }
 
         protected Product selectedProduct;
         protected string selectedProductId;
-
+        protected const string STORE_NAME = "statestore";
 
         protected void SelectProduct(string productId)
         {
@@ -36,9 +44,38 @@ namespace ContosoCrafts.WebSite.Components
         protected async Task AddToCart(string productId)
         {
             // get state
+            var client = ClientFactory.CreateClient("dapr");
+            var resp = await client.GetAsync($"v1.0/state/{STORE_NAME}/cart");
+
+            if (!resp.IsSuccessStatusCode) return;
+
+            Dictionary<string, int> state = null;
+            if (resp.StatusCode == HttpStatusCode.NoContent)
+            {
+                state = new Dictionary<string, int> { [productId] = 1 };
+            }
+            else if (resp.StatusCode == HttpStatusCode.OK)
+            {
+                var responseBody = await resp.Content.ReadAsStringAsync();
+                state = JsonSerializer.Deserialize<Dictionary<string, int>>(responseBody);
+                if (state.ContainsKey(productId))
+                {
+                    state[productId] = state[productId] + 1;
+                }
+                else
+                {
+                    state[productId] = 1;
+                }
+            }
+
             // persist state in dapr
-            //
-            await _eventAggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = 10 });
+            var payload = JsonSerializer.Serialize(new[] {
+                new { key = "cart", value = state }
+            });
+
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            await client.PostAsync($"v1.0/state/{STORE_NAME}", content);
+            await EventAggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = state.Keys.Count });
         }
     }
 }
