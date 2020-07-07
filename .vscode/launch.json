@@ -5,15 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch ContosoCrafts.WebSite",
+            "name": "Docker .NET Core Attach (Preview)",
+            "type": "docker",
+            "request": "attach",
+            "platform": "netCore",
+            "sourceFileMap": {
+                "/src": "${workspaceFolder}/src/ContosoCrafts.WebSite"
+            }
+        },
+        {
+            "name": "Debug ContosoCrafts.WebSite",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build webit",
+            "preLaunchTask": "build website",
             "program": "${workspaceFolder}/src/ContosoCrafts.WebSite/bin/Debug/netcoreapp3.1/ContosoCrafts.WebSite.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/ContosoCrafts.WebSite",
             "stopAtEntry": false,
-            // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
                 "action": "openExternally",
                 "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
@@ -26,7 +34,7 @@
             }
         },
         {
-            "name": "Launch ContosoCrafts.ProductsApi",
+            "name": "Debug ContosoCrafts.ProductsApi",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build api",
@@ -34,7 +42,6 @@
             "args": [],
             "cwd": "${workspaceFolder}/src/ContosoCrafts.ProductsApi",
             "stopAtEntry": false,
-            // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
                 "action": "openExternally",
                 "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
@@ -51,6 +58,18 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "Docker Website Debug",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: website debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/ContosoCrafts.WebSite/ContosoCrafts.WebSite.csproj"
+            },
+            "dockerServerReadyAction": {
+                "uriFormat": "%s://localhost:%s"
+            }
         }
     ]
 }

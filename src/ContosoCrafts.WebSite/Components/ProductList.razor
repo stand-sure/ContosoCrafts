@@ -2,27 +2,30 @@
 
 <div>
     <div class="card-columns">
-        @foreach (var product in products)
+        @if(products != null)
         {
-            <div class="card">
-                <div class="card-img" style="background-image: url('@product.Image');">
+            @foreach (var product in products)
+            {
+                <div class="card">
+                    <div class="card-img" style="background-image: url('@product.Image');">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Title</h5>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">
+                            <button @onclick="(e => SelectProduct(product.Id))"
+                                    data-toggle="modal" data-target="#productModal" class="btn btn-primary">
+                                Info
+                            </button>
+                            <button class="btn btn-primary">Share</button>
+                            <button class="btn btn-primary" @onclick="(e => AddToCart(product.Id))">
+                                Add to cart
+                            </button>
+                        </small>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <h5 class="card-title">@product.Title</h5>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">
-                        <button @onclick="(e => SelectProduct(product.Id))"
-                                data-toggle="modal" data-target="#productModal" class="btn btn-primary">
-                            Info
-                        </button>
-                        <button class="btn btn-primary">Share</button>
-                        <button class="btn btn-primary" @onclick="(e => AddToCart(product.Id))">
-                            Add to cart
-                        </button>
-                    </small>
-                </div>
-            </div>
+            }
         }
     </div>
 
