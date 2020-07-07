@@ -8,6 +8,7 @@ services:
       dockerfile: Dockerfile
     container_name: contoso_website
     volumes:
+      - ~/.vsdbg:/remote_debugger:rw
       - ~/.aspnet/https:/https:ro
     ports:
       - "80:80"
@@ -44,6 +45,7 @@ services:
     ports:
       - "90:80"
       - "91:443"
+      - "3500:3500"
     depends_on:
       - mongodb
 
@@ -64,8 +66,9 @@ services:
     volumes:
       - "./components/:/components"
     depends_on:
-      - website
+      - productsapi
       - redis
+      - placement
     network_mode: "service:productsapi"
 
   #####  MongoDB #####

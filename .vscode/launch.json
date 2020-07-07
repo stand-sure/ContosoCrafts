@@ -5,10 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Docker .NET Core Attach (Preview)",
+            "name": "Docker Website Attach",
             "type": "docker",
             "request": "attach",
             "platform": "netCore",
+            "containerName": "contoso_website",
             "sourceFileMap": {
                 "/src": "${workspaceFolder}/src/ContosoCrafts.WebSite"
             }
