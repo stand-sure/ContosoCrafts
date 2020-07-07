@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ContosoCrafts.WebSite.Models;
@@ -16,9 +17,14 @@ namespace ContosoCrafts.WebSite.Services
             this.clientFactory = clientFactory;
         }
 
-        public Task AddRating(string productId, int rating)
+        public async Task AddRating(string productId, int rating)
         {
-            throw new System.NotImplementedException();
+            var client = clientFactory.CreateClient("dapr");
+
+            var payload = JsonSerializer.Serialize(new { productId, rating });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            var resp = await client.PatchAsync("/v1.0/invoke/productsapi/method/products", content);
         }
 
         public async Task<IEnumerable<Product>> GetProducts()

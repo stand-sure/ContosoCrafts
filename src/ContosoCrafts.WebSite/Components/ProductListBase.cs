@@ -16,7 +16,7 @@ namespace ContosoCrafts.WebSite.Components
     public class ProductListBase : ComponentBase
     {
         [Inject]
-        protected JsonFileProductService ProductService { get; set; }
+        protected IProductService ProductService { get; set; }
 
         [Inject]
         private IEventAggregator EventAggregator { get; set; }
@@ -24,20 +24,26 @@ namespace ContosoCrafts.WebSite.Components
         [Inject]
         private IHttpClientFactory ClientFactory { get; set; }
 
+        protected IEnumerable<Product> products = null;
         protected Product selectedProduct;
         protected string selectedProductId;
         protected const string STORE_NAME = "statestore";
 
-        protected void SelectProduct(string productId)
+        protected override async Task OnInitializedAsync()
+        {
+            if (products == null)
+                products = await ProductService.GetProducts();
+        }
+        protected async Task SelectProduct(string productId)
         {
             selectedProductId = productId;
-            selectedProduct = ProductService.GetProducts().First(x => x.Id == productId);
+            selectedProduct = (await ProductService.GetProducts()).First(x => x.Id == productId);
         }
 
-        protected void SubmitRating(int rating)
+        protected async Task SubmitRating(int rating)
         {
-            ProductService.AddRating(selectedProductId, rating);
-            SelectProduct(selectedProductId);
+            await ProductService.AddRating(selectedProductId, rating);
+            await SelectProduct(selectedProductId);
             StateHasChanged();
         }
 

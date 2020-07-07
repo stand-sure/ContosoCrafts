@@ -2,7 +2,7 @@
 
 <div>
     <div class="card-columns">
-        @foreach (var product in ProductService.GetProducts())
+        @foreach (var product in products)
         {
             <div class="card">
                 <div class="card-img" style="background-image: url('@product.Image');">

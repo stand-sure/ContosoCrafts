@@ -27,16 +27,14 @@ namespace ContosoCrafts.WebSite
             });
             services.AddControllers();
             services.AddScoped<IEventAggregator, EventAggregator.Blazor.EventAggregator>();
-            services.AddSingleton<JsonFileProductService>();
+            services.AddSingleton<IProductService, JsonFileProductService>();
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseExceptionHandler("/Error");
-            // See https://aka.ms/aspnetcore-hsts.
-            app.UseHsts();
 
-            //app.UseHttpsRedirection();
+            app.UseHsts();
             app.UseStaticFiles();
 
             app.UseRouting();
