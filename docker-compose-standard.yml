@@ -7,6 +7,9 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ~/.aspnet/https:/https:ro
+      - ~/.vsdbg:/remote_debugger:rw
+    ports:
+      - "80:80"
     depends_on:
       - mongodb
 

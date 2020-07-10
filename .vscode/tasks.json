@@ -95,6 +95,22 @@
             }
         },
         {
+            "type": "docker-build",
+            "label": "docker-build: api release",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "contosocrafts_api:latest",
+                "dockerfile": "${workspaceFolder}/src/ContosoCrafts.ProductsApi/Dockerfile",
+                "context": "${workspaceFolder}/src/ContosoCrafts.ProductsApi",
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/ContosoCrafts.ProductsApi/ContosoCrafts.ProductsApi.csproj"
+            }
+        },
+        {
             "type": "docker-run",
             "label": "docker-run: website debug",
             "dependsOn": [
