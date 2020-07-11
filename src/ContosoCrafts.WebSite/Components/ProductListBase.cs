@@ -27,7 +27,6 @@ namespace ContosoCrafts.WebSite.Components
         protected IEnumerable<Product> products = null;
         protected Product selectedProduct;
         protected string selectedProductId;
-        protected const string STORE_NAME = "statestore";
 
         protected override async Task OnInitializedAsync()
         {
@@ -47,30 +46,35 @@ namespace ContosoCrafts.WebSite.Components
             StateHasChanged();
         }
 
-        protected async Task AddToCart(string productId)
+        protected async Task AddToCart(string productId, string title)
         {
             // get state
             var client = ClientFactory.CreateClient("dapr");
-            var resp = await client.GetAsync($"v1.0/state/{STORE_NAME}/cart");
+            var resp = await client.GetAsync($"v1.0/state/{Constants.STORE_NAME}/cart");
 
             if (!resp.IsSuccessStatusCode) return;
 
-            Dictionary<string, int> state = null;
+            Dictionary<string, CartItem> state = null;
             if (resp.StatusCode == HttpStatusCode.NoContent)
             {
-                state = new Dictionary<string, int> { [productId] = 1 };
+                // Empty cart
+                state = new Dictionary<string, CartItem> { [productId] = new CartItem { Title = title, Quantity = 1 } };
             }
             else if (resp.StatusCode == HttpStatusCode.OK)
             {
                 var responseBody = await resp.Content.ReadAsStringAsync();
-                state = JsonSerializer.Deserialize<Dictionary<string, int>>(responseBody);
+                state = JsonSerializer.Deserialize<Dictionary<string, CartItem>>(responseBody);
                 if (state.ContainsKey(productId))
                 {
-                    state[productId] = state[productId] + 1;
+                    // Product already in cart
+                    CartItem selectedItem = state[productId];
+                    selectedItem.Quantity++;
+                    state[productId] = selectedItem;
                 }
                 else
                 {
-                    state[productId] = 1;
+                    // Add product to car
+                    state[productId] = new CartItem { Title = title, Quantity = 1 };
                 }
             }
 
@@ -80,7 +84,7 @@ namespace ContosoCrafts.WebSite.Components
             });
 
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
-            await client.PostAsync($"v1.0/state/{STORE_NAME}", content);
+            await client.PostAsync($"v1.0/state/{Constants.STORE_NAME}", content);
             await EventAggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = state.Keys.Count });
         }
     }

@@ -4,4 +4,6 @@ namespace ContosoCrafts.WebSite.Events
     {
         public int ItemCount { get; set; }
     }
+
+    public class CheckoutStarted { }
 }
