@@ -11,12 +11,6 @@ namespace ContosoCrafts.CheckoutProcessor.Controllers
     [Route("[controller]")]
     public class DaprController : ControllerBase
     {
-        private readonly ILogger<DaprController> logger;
-        public DaprController(ILogger<DaprController> logger)
-        {
-            this.logger = logger;
-        }
-
         [HttpGet("subscribe")]
         public ActionResult Subscribe()
         {
