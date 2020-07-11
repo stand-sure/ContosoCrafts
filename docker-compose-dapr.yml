@@ -30,9 +30,11 @@ services:
       ]
     volumes:
       - "./components/:/components"
+      - ~/.vsdbg:/remote_debugger:rw
     depends_on:
       - website
       - redis
+      - placement
     network_mode: "service:website"
 
   #####  API & DAPR Sidecar #####
@@ -42,10 +44,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ~/.aspnet/https:/https:ro
-    ports:
-      - "90:80"
-      - "91:443"
-      - "3500:3500"
     depends_on:
       - mongodb
 
@@ -70,6 +68,37 @@ services:
       - redis
       - placement
     network_mode: "service:productsapi"
+
+  #####  Checkout Processor & DAPR Sidecar #####
+  checkoutprocessor:
+    build:
+      context: ./src/ContosoCrafts.CheckoutProcessor
+      dockerfile: Dockerfile
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+      - ~/.aspnet/https:/https:ro
+
+  checkoutprocessor_dapr:
+    image: "daprio/daprd:0.8.0"
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "checkoutprocessor",
+        "-app-port",
+        "80",
+        "-placement-address",
+        "placement:6000",
+        "-components-path",
+        "/components",
+      ]
+    volumes:
+      - "./components/:/components"
+      - ~/.vsdbg:/remote_debugger:rw
+    depends_on:
+      - redis
+      - placement
+    network_mode: "service:checkoutprocessor"
 
   #####  MongoDB #####
   mongodb:

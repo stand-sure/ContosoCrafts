@@ -15,6 +15,24 @@
             }
         },
         {
+            "name": "Docker API Attach",
+            "type": "docker",
+            "request": "attach",
+            "platform": "netCore",
+            "sourceFileMap": {
+                "/src": "${workspaceFolder}/src/ContosoCrafts.ProductsApi"
+            }
+        },
+        {
+            "name": "Docker CheckoutProcessor Attach",
+            "type": "docker",
+            "request": "attach",
+            "platform": "netCore",
+            "sourceFileMap": {
+                "/src": "${workspaceFolder}/src/ContosoCrafts.CheckoutProcessor"
+            }
+        },
+        {
             "name": "Debug ContosoCrafts.WebSite",
             "type": "coreclr",
             "request": "launch",
@@ -67,9 +85,15 @@
             "preLaunchTask": "docker-run: website debug",
             "netCore": {
                 "appProject": "${workspaceFolder}/src/ContosoCrafts.WebSite/ContosoCrafts.WebSite.csproj"
-            },
-            "dockerServerReadyAction": {
-                "uriFormat": "%s://localhost:%s"
+            }
+        },
+        {
+            "name": "Docker API Debug",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: api debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/ContosoCrafts.WebSite/ContosoCrafts.WebSite.csproj"
             }
         }
     ]
