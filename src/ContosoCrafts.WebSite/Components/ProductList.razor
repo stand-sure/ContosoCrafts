@@ -18,7 +18,6 @@
                                     data-toggle="modal" data-target="#productModal" class="btn btn-primary">
                                 Info
                             </button>
-                            <button class="btn btn-primary">Share</button>
                             <button class="btn btn-primary" @onclick="(e => AddToCart(product.Id, product.Title))">
                                 Add to cart
                             </button>
@@ -28,6 +27,5 @@
             }
         }
     </div>
-
         <ProductModal Product="@selectedProduct" SubmitRating="@SubmitRating"></ProductModal>
 </div>

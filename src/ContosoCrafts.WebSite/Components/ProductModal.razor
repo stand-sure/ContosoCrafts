@@ -62,7 +62,7 @@
 
     void GetCurrentRating()
     {
-        if (Product.Ratings == null)
+        if (Product.Ratings == null || Product.Ratings.Count() == 0)
         {
             currentRating = 0;
             voteCount = 0;

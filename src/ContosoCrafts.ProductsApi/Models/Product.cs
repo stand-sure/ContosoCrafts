@@ -15,6 +15,7 @@ namespace ContosoCrafts.ProductsApi.Models
 
         [BsonRepresentation(BsonType.String)]
         [BsonElement("Id")]
+        [JsonPropertyName("Id")]
         public string ProductId { get; set; }
         public string Maker { get; set; }
 
