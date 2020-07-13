@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  #####  Website & DAPR Sidecar #####
+  ##### Website & DAPR Sidecar #####
   website:
     build:
       context: ./src/ContosoCrafts.WebSite
@@ -29,15 +29,15 @@ services:
         "/components",
       ]
     volumes:
-      - "./components/:/components"
+      - "./components/local:/components"
+      - ./vault_dev_token:/vault/token
       - ~/.vsdbg:/remote_debugger:rw
     depends_on:
       - website
-      - redis
       - placement
     network_mode: "service:website"
 
-  #####  API & DAPR Sidecar #####
+  ##### API & DAPR Sidecar #####
   productsapi:
     build:
       context: ./src/ContosoCrafts.ProductsApi
@@ -62,14 +62,14 @@ services:
         "/components",
       ]
     volumes:
-      - "./components/:/components"
+      - "./components/local:/components"
+      - ./vault_dev_token:/vault/token
     depends_on:
       - productsapi
-      - redis
       - placement
     network_mode: "service:productsapi"
 
-  #####  Checkout Processor & DAPR Sidecar #####
+  ##### Checkout Processor & DAPR Sidecar #####
   checkoutprocessor:
     build:
       context: ./src/ContosoCrafts.CheckoutProcessor
@@ -93,14 +93,15 @@ services:
         "/components",
       ]
     volumes:
-      - "./components/:/components"
+      - "./components/local:/components"
+      - ./vault_dev_token:/vault/token
       - ~/.vsdbg:/remote_debugger:rw
     depends_on:
-      - redis
       - placement
+      - checkoutprocessor
     network_mode: "service:checkoutprocessor"
 
-  #####  MongoDB #####
+  ##### MongoDB #####
   mongodb:
     container_name: mongo_service
     image: mongo:4.2.8
@@ -114,14 +115,14 @@ services:
     ports:
       - "27017:27017"
 
-  ##### Dapr Services #####
-  placement:
-    image: "daprio/placement:0.8.0"
-    container_name: "placement"
-    command: ["./placement", "-port", "6000"]
+  ##### Zipkin #####
+  zipkin:
+    container_name: "zipkin"
+    image: "openzipkin/zipkin:2.21.5"
     ports:
-      - "6000:6000"
+      - 9411:9411
 
+  ##### Redis #####
   redis:
     container_name: "redis_service"
     image: "redis:6.0.5-alpine"
@@ -130,6 +131,34 @@ services:
       - "6379:6379"
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+  ##### Hashicorp Vault (dev server mode) #####
+  vault:
+    image: vault:1.4.3
+    container_name: vault_service
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_API_ADDR=http://vault_service:8200
+    volumes:
+      - ./vault.hcl:/etc/vault/config.hcl
+      - ~/Dev/Tools/vault/file:/vault/file
+      - ~/Dev/Tools/vault/logs:/vault/logs
+    command: server -config=/etc/vault/config.hcl
+    ports:
+      - "8200:8200"
+
+  ##### Dapr Services #####
+  placement:
+    image: "daprio/placement:0.8.0"
+    container_name: "placement"
+    command: ["./placement", "-port", "6000"]
+    ports:
+      - "6000:6000"
+    depends_on:
+      - vault
+      - redis
+      - zipkin
 
 networks:
   default:
