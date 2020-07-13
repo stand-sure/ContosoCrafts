@@ -27,7 +27,7 @@ namespace ContosoCrafts.WebSite
             });
             services.AddControllers();
             services.AddScoped<IEventAggregator, EventAggregator.Blazor.EventAggregator>();
-            services.AddSingleton<IProductService, JsonFileProductService>();
+            services.AddSingleton<IProductService, DaprProductService>();
         }
 
         public void Configure(IApplicationBuilder app)

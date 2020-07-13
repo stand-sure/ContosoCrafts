@@ -67,8 +67,17 @@
 
     protected async Task SubmitCheckout()
     {
+        if (Items == null || !Items.Any()) return;
+
         var client = ClientFactory.CreateClient("dapr");
         var resp = await client.DeleteAsync($"v1.0/state/{Constants.STORE_NAME}/cart");
+
+        var payload = JsonSerializer.Serialize(Items);
+        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+        await client.PostAsync($"v1.0/publish/checkout", content);
+
+        Items = null;
         await Aggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = 0 });
+        StateHasChanged();
     }
 }
