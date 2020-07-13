@@ -9,4 +9,10 @@ spec:
     - name: redisHost
       value: redis_service:6379
     - name: redisPassword
-      value: S0m3P@$$w0rd
+      secretKeyRef:
+        name: redis
+        key: redisPassword
+    # - name: redisPassword
+    #   value: S0m3P@$$w0rd
+auth:
+  secretStore: vault
