@@ -10,6 +10,8 @@ services:
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
       - ~/.aspnet/https:/https:ro
+    env_file:
+      - .env
     ports:
       - "80:80"
       - "443:443"
@@ -44,8 +46,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ~/.aspnet/https:/https:ro
-    depends_on:
-      - mongodb
+    env_file:
+      - .env
 
   productsapi_dapr:
     image: "daprio/daprd:0.8.0"
@@ -77,6 +79,8 @@ services:
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
       - ~/.aspnet/https:/https:ro
+    env_file:
+      - .env
 
   checkoutprocessor_dapr:
     image: "daprio/daprd:0.8.0"
@@ -101,64 +105,13 @@ services:
       - checkoutprocessor
     network_mode: "service:checkoutprocessor"
 
-  ##### MongoDB #####
-  mongodb:
-    container_name: mongo_service
-    image: mongo:4.2.8
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
-      - MONGO_INITDB_DATABASE=contosocrafts
-    volumes:
-      - ./productdata/products.json:/data/products.json
-      - ./productdata/populate.sh:/docker-entrypoint-initdb.d/populate.sh
-    ports:
-      - "27017:27017"
-
-  ##### Zipkin #####
-  zipkin:
-    container_name: "zipkin"
-    image: "openzipkin/zipkin:2.21.5"
-    ports:
-      - 9411:9411
-
-  ##### Redis #####
-  redis:
-    container_name: "redis_service"
-    image: "redis:6.0.5-alpine"
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-
-  ##### Hashicorp Vault (dev server mode) #####
-  vault:
-    image: vault:1.4.3
-    container_name: vault_service
-    cap_add:
-      - IPC_LOCK
-    environment:
-      - VAULT_API_ADDR=http://vault_service:8200
-    volumes:
-      - ./vault.hcl:/etc/vault/config.hcl
-      - ~/Dev/Tools/vault/file:/vault/file
-      - ~/Dev/Tools/vault/logs:/vault/logs
-    command: server -config=/etc/vault/config.hcl
-    ports:
-      - "8200:8200"
-
-  ##### Dapr Services #####
+  ##### Dapr Placement #####
   placement:
     image: "daprio/placement:0.8.0"
     container_name: "placement"
     command: ["./placement", "-port", "6000"]
     ports:
       - "6000:6000"
-    depends_on:
-      - vault
-      - redis
-      - zipkin
 
 networks:
   default:
