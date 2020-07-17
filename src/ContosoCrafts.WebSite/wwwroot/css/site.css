@@ -35,6 +35,10 @@ button .fa-shopping-cart {
   font: bold 0.4em sans-serif;
 }
 
+#checkoutModal .modal-header .card-body {
+  padding: 0;
+}
+
 #checkoutModal .modal-header,
 #productModal .modal-header {
   background-color: #e9a8a6;
