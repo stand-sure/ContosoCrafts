@@ -17,7 +17,7 @@ services:
       - "443:443"
 
   website_dapr:
-    image: "daprio/daprd:0.8.0"
+    image: "daprio/daprd:0.9.0"
     command:
       [
         "./daprd",
@@ -27,11 +27,14 @@ services:
         "80",
         "-placement-address",
         "placement:6000",
+        "-config",
+        "/dapr/config.yaml",
         "-components-path",
-        "/components",
+        "/dapr/components",
       ]
     volumes:
-      - "./components/local:/components"
+      - "./components/local:/dapr/components"
+      - "./components/config.yaml:/dapr/config.yaml"
       - ./vault_dev_token:/vault/token
       - ~/.vsdbg:/remote_debugger:rw
     depends_on:
@@ -50,7 +53,7 @@ services:
       - .env
 
   productsapi_dapr:
-    image: "daprio/daprd:0.8.0"
+    image: "daprio/daprd:0.9.0"
     command:
       [
         "./daprd",
@@ -60,11 +63,14 @@ services:
         "80",
         "-placement-address",
         "placement:6000",
+        "-config",
+        "/dapr/config.yaml",
         "-components-path",
-        "/components",
+        "/dapr/components",
       ]
     volumes:
-      - "./components/local:/components"
+      - "./components/local:/dapr/components"
+      - "./components/config.yaml:/dapr/config.yaml"
       - ./vault_dev_token:/vault/token
     depends_on:
       - productsapi
@@ -83,7 +89,7 @@ services:
       - .env
 
   checkoutprocessor_dapr:
-    image: "daprio/daprd:0.8.0"
+    image: "daprio/daprd:0.9.0"
     command:
       [
         "./daprd",
@@ -93,11 +99,14 @@ services:
         "80",
         "-placement-address",
         "placement:6000",
+        "-config",
+        "/dapr/config.yaml",
         "-components-path",
-        "/components",
+        "/dapr/components",
       ]
     volumes:
-      - "./components/local:/components"
+      - "./components/local:/dapr/components"
+      - "./components/config.yaml:/dapr/config.yaml"
       - ./vault_dev_token:/vault/token
       - ~/.vsdbg:/remote_debugger:rw
     depends_on:
@@ -107,7 +116,7 @@ services:
 
   ##### Dapr Placement #####
   placement:
-    image: "daprio/placement:0.8.0"
+    image: "daprio/placement:0.9.0"
     container_name: "placement"
     command: ["./placement", "-port", "6000"]
     ports:
