@@ -41,6 +41,8 @@ services:
       - website
       - placement
     network_mode: "service:website"
+    env_file:
+      - .env
 
   ##### API & DAPR Sidecar #####
   productsapi:
@@ -76,6 +78,8 @@ services:
       - productsapi
       - placement
     network_mode: "service:productsapi"
+    env_file:
+      - .env
 
   ##### Checkout Processor & DAPR Sidecar #####
   checkoutprocessor:
@@ -112,6 +116,8 @@ services:
     depends_on:
       - placement
       - checkoutprocessor
+    env_file:
+      - .env
     network_mode: "service:checkoutprocessor"
 
   ##### Dapr Placement #####
@@ -121,6 +127,8 @@ services:
     command: ["./placement", "-port", "6000"]
     ports:
       - "6000:6000"
+    env_file:
+      - .env
 
 networks:
   default:
