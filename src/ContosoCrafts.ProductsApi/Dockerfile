@@ -7,14 +7,10 @@ ARG USER_GID=$USER_UID
 # Create and switch to the user
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
-#USER $USERNAME
 
-ENV ASPNETCORE_URLS=http://+:80;https://+:443 \
-    ASPNETCORE_Kestrel__Certificates__Default__Password=1111 \
-    ASPNETCORE_Kestrel__Certificates__Default__Path=/https/demo.pfx
+ENV ASPNETCORE_URLS=http://+:80;
 
 EXPOSE 80
-EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /src
@@ -30,4 +26,5 @@ RUN dotnet publish "ContosoCrafts.ProductsApi.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER $USERNAME
 ENTRYPOINT ["dotnet", "ContosoCrafts.ProductsApi.dll"]
