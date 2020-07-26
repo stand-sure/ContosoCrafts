@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using CloudNative.CloudEvents;
 
 namespace ContosoCrafts.CheckoutProcessor
 {
@@ -14,8 +15,11 @@ namespace ContosoCrafts.CheckoutProcessor
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllers();
+        {            
+            services.AddControllers(opts =>
+            {
+                opts.InputFormatters.Insert(0, new CloudEventJsonInputFormatter());
+            });
         }
 
         public void Configure(IApplicationBuilder app)
