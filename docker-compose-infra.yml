@@ -15,6 +15,11 @@ services:
       - ~/Dev/Tools/mongo/data/db:/data/db
     ports:
       - "27017:27017"
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://localhost:12201"
+        labels: data, infra
 
   ##### Rabbitmq #####
   rabbitmq:
@@ -55,21 +60,27 @@ services:
     ports:
       - "8200:8200"
 
-  ##### Zipkin #####
-  # zipkin:
-  #   container_name: "zipkin_server"
-  #   image: "openzipkin/zipkin:2.21.5"
-  #   ports:
-  #     - 9411:9411
-
+  ##### jaeger #####
   jaeger:
     image: "jaegertracing/all-in-one:1.18.1"
-    container_name: "jaeger_server"
+    container_name: "jaeger_service"
     environment:
       - COLLECTOR_ZIPKIN_HTTP_PORT=9411
     ports:
       - "16686:16686"
       - "9411:9411"
+
+  ##### Seq #####
+  seq:
+    container_name: "seq_service"
+    image: datalust/seq:2020.1
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - ~/Dev/tools/seq/data:/data
+    ports:
+      - "8191:80"
+      - "12201:12201/udp"
 
 networks:
   default:

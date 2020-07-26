@@ -9,4 +9,4 @@ spec:
     - name: enabled
       value: "true"
     - name: exporterAddress
-      value: "http://jaeger_server:9411/api/v2/spans"
+      value: "http://jaeger_service:9411/api/v2/spans"
