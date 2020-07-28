@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+  ##### Website  #####
+  website:
+    build:
+      context: ./src/ContosoCrafts.WebSite
+      dockerfile: Dockerfile
+    container_name: contoso_website
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+      - ~/.aspnet/https:/https:ro
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+
+  ##### API #####
+  productsapi:
+    build:
+      context: ./src/ContosoCrafts.ProductsApi
+      dockerfile: Dockerfile
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+    env_file:
+      - .env
+
+  ##### Checkout Processor #####
+  checkoutprocessor:
+    build:
+      context: ./src/ContosoCrafts.CheckoutProcessor
+      dockerfile: Dockerfile
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+    env_file:
+      - .env
+
+networks:
+  default:
+    name: contoso_steeltoe_network
+    driver: bridge
