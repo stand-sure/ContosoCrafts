@@ -22,6 +22,7 @@ namespace ContosoCrafts.WebSite
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddHttpClient();
+            services.AddHealthChecks();
             services.AddControllers();
             services.AddScoped<IEventAggregator, EventAggregator.Blazor.EventAggregator>();
             services.AddSingleton<IProductService, JsonFileProductService>();
@@ -37,6 +38,7 @@ namespace ContosoCrafts.WebSite
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
