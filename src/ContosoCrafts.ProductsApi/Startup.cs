@@ -27,6 +27,7 @@ namespace ContosoCrafts.ProductsApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHealthChecks();
             services.AddControllers()
                     .AddJsonOptions(option =>
                     {
@@ -46,6 +47,7 @@ namespace ContosoCrafts.ProductsApi
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
             });
         }
