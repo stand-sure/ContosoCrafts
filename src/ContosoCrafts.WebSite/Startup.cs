@@ -3,6 +3,10 @@ using EventAggregator.Blazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.ObjectPool;
+using RabbitMQ.Client;
+using StackExchange.Redis;
 using Steeltoe.Common.Http.Discovery;
 
 namespace ContosoCrafts.WebSite
@@ -20,6 +24,7 @@ namespace ContosoCrafts.WebSite
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
             services.AddHttpClient("discovery",
                 c =>
                 {
@@ -28,14 +33,43 @@ namespace ContosoCrafts.WebSite
                 })
                 .AddHttpMessageHandler<DiscoveryHttpMessageHandler>()
                 .AddTypedClient<IProductService, SteeltoeProductService>();
+
             services.AddStackExchangeRedisCache(options =>
-            {                
-                options.ConfigurationOptions.Password = "S0m3P@$$w0rd";
-                options.ConfigurationOptions.EndPoints.Add("redis_service:6379");   
+            {
+                options.ConfigurationOptions = new ConfigurationOptions
+                {
+                    Password = "S0m3P@$$w0rd",
+                    EndPoints = { "redis_service:6379" }
+                };
 
                 // This allows partitioning a single backend cache for use with multiple apps/services.
-                options.InstanceName = "ContosoRedis";             
+                options.InstanceName = "ContosoRedis";
             });
+
+            services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+
+            services.AddSingleton<IConnectionFactory, ConnectionFactory>(provider =>
+            {
+                return new ConnectionFactory
+                {
+                    VirtualHost = Constants.RABBITMQ_VHOST,
+                    HostName = "rabbitmq_service",
+                    UserName = "demo",
+                    Password = "demo"
+                };
+            });
+
+            services.AddSingleton<ObjectPool<IModel>>(provider =>
+            {
+                var poolProvider = provider.GetRequiredService<ObjectPoolProvider>();
+                var cf = provider.GetRequiredService<IConnectionFactory>();
+                var policy = new RabbitModelPooledObjectPolicy(cf);
+
+                return poolProvider.Create(policy);
+            });
+
+            services.AddTransient<RabbitMQBus>();
+
             services.AddHealthChecks();
             services.AddControllers();
             services.AddScoped<IEventAggregator, EventAggregator.Blazor.EventAggregator>();
