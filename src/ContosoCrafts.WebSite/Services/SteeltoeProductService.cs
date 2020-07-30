@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ContosoCrafts.WebSite.Models;
@@ -20,9 +21,12 @@ namespace ContosoCrafts.WebSite.Services
             _logger = logger;
             _httpClient = httpClient;
         }
-        public Task AddRating(string productId, int rating)
+        public async Task AddRating(string productId, int rating)
         {
-            throw new System.NotImplementedException();
+            var payload = JsonSerializer.Serialize(new { productId, rating });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            var resp = await _httpClient.PatchAsync(PRODUCTS_REQUEST_URI, content);
         }
 
         public async Task<IEnumerable<Product>> GetProducts()
