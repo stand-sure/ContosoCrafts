@@ -1,5 +1,8 @@
 @inject IHttpClientFactory ClientFactory
 @inject EventAggregator.Blazor.IEventAggregator Aggregator
+@inject IDistributedCache Cache
+@inject RabbitMQBus MessageBus
+
 @implements EventAggregator.Blazor.IHandle<CheckoutStarted>
 
 <div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -50,20 +53,28 @@
     {
         Aggregator.Subscribe(this);
     }
-    public  Task HandleAsync(CheckoutStarted cartUpdated)
-    {        
-        //TODO: Load cart state into Items        
+    public async Task HandleAsync(CheckoutStarted cartUpdated)
+    {
+        // get state
+        var cartData = await Cache.GetStringAsync(Constants.CART_CACHE_KEY);
+
+        if (cartData == null) return;
+
+        var cartItems = JsonSerializer.Deserialize<Dictionary<string, CartItem>>(cartData);
+        Items = cartItems.Values;
+
         StateHasChanged();
-        return Task.CompletedTask;
     }
 
     protected async Task SubmitCheckout()
     {
         if (Items == null || !Items.Any()) return;
 
-        //TODO: Submit checkout
+        //Submit checkout
+        MessageBus.Publish(Items);
 
-        //TODO: Clear state store
+        // Clear state store
+        await Cache.RemoveAsync(Constants.CART_CACHE_KEY);
 
         Items = null;
         await Aggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = 0 });
