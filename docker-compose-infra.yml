@@ -25,6 +25,7 @@ services:
       - RABBITMQ_DEFAULT_USER=demo
       - RABBITMQ_DEFAULT_PASS=demo
       - RABBITMQ_ERLANG_COOKIE=demo_cookie_1234
+      - RABBITMQ_DEFAULT_VHOST=contoso_steeltoe
     ports:
       - 5672:5672
       - 15672:15672
