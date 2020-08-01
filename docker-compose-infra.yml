@@ -12,7 +12,7 @@ services:
     volumes:
       - ./productdata/products.json:/data/products.json
       - ./productdata/populate.sh:/docker-entrypoint-initdb.d/populate.sh
-      - ~/Dev/Tools/mongo/data/db:/data/db
+      - ./contoso_tmp/mongo/data/db:/data/db
     ports:
       - "27017:27017"
 
@@ -54,11 +54,21 @@ services:
     environment:
       - ACCEPT_EULA=Y
     volumes:
-      - ~/Dev/tools/seq/data:/data
+      - ./contoso_tmp/seq/data:/data
     ports:
       - "8191:80"
       - "12201:12201/udp"
 
+  ##### fluent-bit #####
+  fluent-bit:
+    image: fluent/fluent-bit:1.5.2
+    container_name: "fluentbit_service"
+    hostname: "fluentbit_service"
+    ports:
+      - "24224:24224"
+    volumes:
+      - "./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro"
+      
   ##### Consul #####
   consul:
     container_name: consul_service
