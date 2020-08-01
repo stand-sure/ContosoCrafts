@@ -12,9 +12,9 @@ services:
     volumes:
       - ./productdata/products.json:/data/products.json
       - ./productdata/populate.sh:/docker-entrypoint-initdb.d/populate.sh
-      - ~/Dev/Tools/mongo/data/db:/data/db
+      - ./contoso_tmp/mongo/data/db:/data/db
     ports:
-      - "27017:27017"    
+      - "27017:27017"
 
   ##### Rabbitmq #####
   rabbitmq:
@@ -49,8 +49,8 @@ services:
       - VAULT_API_ADDR=http://vault_service:8200
     volumes:
       - ./vault.hcl:/etc/vault/config.hcl
-      - ~/Dev/Tools/vault/file:/vault/file
-      - ~/Dev/Tools/vault/logs:/vault/logs
+      - ./contoso_tmp/vault/file:/vault/file
+      - ./contoso_tmp/vault/logs:/vault/logs
     command: server -config=/etc/vault/config.hcl
     ports:
       - "8200:8200"
@@ -82,7 +82,7 @@ services:
     environment:
       - ACCEPT_EULA=Y
     volumes:
-      - ~/Dev/tools/seq/data:/data
+      - ./contoso_tmp/seq/data:/data
     ports:
       - "8191:80"
       - "12201:12201/udp"

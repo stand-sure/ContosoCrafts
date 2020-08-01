@@ -6,7 +6,6 @@ x-logging: &default-logging
     fluentd-address: "localhost:24224"
     fluentd-async-connect: "true"
     tag: "{{.Name}}-{{.ID}}"
-    labels: data, infra
 
 services:
   ##### Website & DAPR Sidecar #####
@@ -15,14 +14,10 @@ services:
       context: ./src/ContosoCrafts.WebSite
       dockerfile: Dockerfile
     container_name: contoso_website
-    volumes:
-      - ~/.vsdbg:/remote_debugger:rw
-      - ~/.aspnet/https:/https:ro
     env_file:
       - .env
     ports:
       - "80:80"
-      - "443:443"
     logging: *default-logging
 
   website_dapr:
@@ -45,7 +40,6 @@ services:
       - "./components/local:/dapr/components"
       - "./components/config.yaml:/dapr/config.yaml"
       - ./vault_dev_token:/vault/token
-      - ~/.vsdbg:/remote_debugger:rw
     depends_on:
       - website
       - placement
@@ -59,8 +53,6 @@ services:
     build:
       context: ./src/ContosoCrafts.ProductsApi
       dockerfile: Dockerfile
-    volumes:
-      - ~/.aspnet/https:/https:ro
     env_file:
       - .env
     logging: *default-logging
@@ -98,9 +90,6 @@ services:
     build:
       context: ./src/ContosoCrafts.CheckoutProcessor
       dockerfile: Dockerfile
-    volumes:
-      - ~/.vsdbg:/remote_debugger:rw
-      - ~/.aspnet/https:/https:ro
     env_file:
       - .env
     logging: *default-logging
@@ -125,7 +114,6 @@ services:
       - "./components/local:/dapr/components"
       - "./components/config.yaml:/dapr/config.yaml"
       - ./vault_dev_token:/vault/token
-      - ~/.vsdbg:/remote_debugger:rw
     depends_on:
       - placement
       - checkoutprocessor

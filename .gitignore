@@ -244,3 +244,6 @@ paket-files/
 .mfractor/
 
 **/.DS_Store
+
+# application temp directory
+contoso_tmp
