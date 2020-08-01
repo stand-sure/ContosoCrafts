@@ -49,5 +49,5 @@ services:
 
 networks:
   default:
-    name: contoso_steeltoe_network
-    driver: bridge
+    external:
+      name: contoso_steeltoe_network
