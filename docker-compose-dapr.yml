@@ -1,5 +1,13 @@
 version: "3.7"
 
+x-logging: &default-logging
+  driver: "fluentd"
+  options:
+    fluentd-address: "localhost:24224"
+    fluentd-async-connect: "true"
+    tag: "{{.Name}}-{{.ID}}"
+    labels: data, infra
+
 services:
   ##### Website & DAPR Sidecar #####
   website:
@@ -15,6 +23,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    logging: *default-logging
 
   website_dapr:
     image: "daprio/daprd:0.9.0"
@@ -43,6 +52,7 @@ services:
     network_mode: "service:website"
     env_file:
       - .env
+    logging: *default-logging
 
   ##### API & DAPR Sidecar #####
   productsapi:
@@ -53,6 +63,7 @@ services:
       - ~/.aspnet/https:/https:ro
     env_file:
       - .env
+    logging: *default-logging
 
   productsapi_dapr:
     image: "daprio/daprd:0.9.0"
@@ -80,6 +91,7 @@ services:
     network_mode: "service:productsapi"
     env_file:
       - .env
+    logging: *default-logging
 
   ##### Checkout Processor & DAPR Sidecar #####
   checkoutprocessor:
@@ -91,6 +103,7 @@ services:
       - ~/.aspnet/https:/https:ro
     env_file:
       - .env
+    logging: *default-logging
 
   checkoutprocessor_dapr:
     image: "daprio/daprd:0.9.0"
@@ -119,6 +132,7 @@ services:
     env_file:
       - .env
     network_mode: "service:checkoutprocessor"
+    logging: *default-logging
 
   ##### Dapr Placement #####
   placement:
@@ -129,6 +143,7 @@ services:
       - "6000:6000"
     env_file:
       - .env
+    logging: *default-logging
 
 networks:
   default:

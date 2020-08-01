@@ -14,12 +14,7 @@ services:
       - ./productdata/populate.sh:/docker-entrypoint-initdb.d/populate.sh
       - ~/Dev/Tools/mongo/data/db:/data/db
     ports:
-      - "27017:27017"
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://localhost:12201"
-        labels: data, infra
+      - "27017:27017"    
 
   ##### Rabbitmq #####
   rabbitmq:
@@ -69,6 +64,16 @@ services:
     ports:
       - "16686:16686"
       - "9411:9411"
+
+  ##### fluent-bit #####
+  fluent-bit:
+    image: fluent/fluent-bit:1.5.2
+    container_name: "fluentbit_service"
+    hostname: "fluentbit_service"
+    ports:
+      - "24224:24224"
+    volumes:
+      - "./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro"
 
   ##### Seq #####
   seq:
