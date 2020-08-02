@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.ObjectPool;
 using RabbitMQ.Client;
+using Serilog;
 using StackExchange.Redis;
 using Steeltoe.Common.Http.Discovery;
 
@@ -83,6 +84,7 @@ namespace ContosoCrafts.WebSite
             app.UseHsts();
             app.UseStaticFiles();
 
+            app.UseSerilogRequestLogging();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
