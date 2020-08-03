@@ -9,6 +9,7 @@ using RabbitMQ.Client;
 using Serilog;
 using StackExchange.Redis;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Management.Tracing;
 
 namespace ContosoCrafts.WebSite
 {
@@ -74,7 +75,8 @@ namespace ContosoCrafts.WebSite
             services.AddHealthChecks();
             services.AddControllers();
             services.AddScoped<IEventAggregator, EventAggregator.Blazor.EventAggregator>();
-            // services.AddSingleton<IProductService, JsonFileProductService>();
+            
+            services.AddDistributedTracing(Configuration, builder => builder.UseZipkinWithTraceOptions(services));
         }
 
         public void Configure(IApplicationBuilder app)

@@ -10,6 +10,7 @@ using Microsoft.Extensions.ObjectPool;
 using RabbitMQ.Client;
 using Serilog;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Management.Tracing;
 
 namespace ContosoCrafts.CheckoutProcessor
 {
@@ -75,7 +76,8 @@ namespace ContosoCrafts.CheckoutProcessor
                         return poolProvider.Create(policy);
                     });
 
-                    //services.AddSingleton<RabbitMQBus>();
+                    services.AddDistributedTracing(Configuration, 
+                        builder => builder.UseZipkinWithTraceOptions(services));
 
                     // Worker services
                     services.AddHostedService<BootstrapWorker>();

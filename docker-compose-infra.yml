@@ -68,7 +68,7 @@ services:
       - "24224:24224"
     volumes:
       - "./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro"
-      
+
   ##### Consul #####
   consul:
     container_name: consul_service

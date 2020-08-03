@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Serilog;
+using Steeltoe.Management.Tracing;
 
 namespace ContosoCrafts.ProductsApi
 {
@@ -31,7 +32,9 @@ namespace ContosoCrafts.ProductsApi
                 var config = provider.GetService<IConfiguration>();
                 return new MongoClient(config["MONGO_CONNECTION"]);
             });
+
             services.AddTransient<IProductService, ProductService>();
+            services.AddDistributedTracing(Configuration, builder => builder.UseZipkinWithTraceOptions(services));
         }
 
         public void Configure(IApplicationBuilder app)

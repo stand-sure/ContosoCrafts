@@ -14,5 +14,6 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />    
     <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
     <PackageReference Include="Steeltoe.Discovery.ClientCore" Version="3.0.0-m3" />
+    <PackageReference Include="Steeltoe.Management.TracingCore" Version="3.0.0-m3" />
   </ItemGroup>
 </Project>
