@@ -44,11 +44,9 @@ namespace ContosoCrafts.CheckoutProcessor.Workers
             var consumer = new AsyncChannelConsumer(channel);
             channel.BasicConsume(CHECKOUT_QUEUE_NAME, false, consumer);
 
-            while (await consumer.Reader.WaitToReadAsync(stoppingToken))
+            await foreach (RabbitmMQMessage msg in consumer.Reader.ReadAllAsync(stoppingToken))
             {
                 _logger.LogInformation("Message Received on the channel");
-
-                RabbitmMQMessage msg = await consumer.Reader.ReadAsync(stoppingToken);
 
                 var json_payload = Encoding.UTF8.GetString(msg.Body.ToArray());
                 var cartItems = JsonSerializer.Deserialize<IEnumerable<CartItem>>(json_payload);
