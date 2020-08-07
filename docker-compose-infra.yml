@@ -55,15 +55,12 @@ services:
     ports:
       - "8200:8200"
 
-  ##### jaeger #####
-  jaeger:
-    image: "jaegertracing/all-in-one:1.18.1"
-    container_name: "jaeger_service"
-    environment:
-      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+  ##### Zipkin #####
+  zipkin:
+    container_name: "zipkin_service"
+    image: "openzipkin/zipkin:2.21.5"
     ports:
-      - "16686:16686"
-      - "9411:9411"
+      - 9411:9411
 
   ##### fluent-bit #####
   fluent-bit:
