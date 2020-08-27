@@ -66,5 +66,19 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
         },
+        {
+            "name": "Debug ContosoCrafts.CheckoutProcessor",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build checkoutprocessor",
+            "program": "${workspaceFolder}/src/ContosoCrafts.CheckoutProcessor/bin/Debug/netcoreapp3.1/ContosoCrafts.CheckoutProcessor.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/ContosoCrafts.CheckoutProcessor",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
     ]
 }
