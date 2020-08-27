@@ -19,12 +19,12 @@ namespace ContosoCrafts.WebSite
         public static int Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration, "Serilog")               
+                .ReadFrom.Configuration(Configuration, "Serilog")
                 .CreateLogger();
 
             try
             {
-                Log.ForContext<Program>().Information("Starting host");
+                Log.ForContext<Program>().Information("Starting host");                
                 CreateHostBuilder(args).Build().Run();
                 return 0;
             }

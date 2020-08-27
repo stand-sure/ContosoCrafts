@@ -57,12 +57,14 @@ namespace ContosoCrafts.CheckoutProcessor
                     // RabbitMQ services
                     services.AddSingleton<IConnectionFactory, ConnectionFactory>(provider =>
                     {
+                        var rabbitConfig = Configuration.GetSection("rabbitmq");
+                        
                         return new ConnectionFactory
                         {
                             VirtualHost = Constants.RABBITMQ_VHOST,
-                            HostName = "rabbitmq_service",
-                            UserName = "demo",
-                            Password = "demo",
+                            HostName = rabbitConfig.GetValue<string>("HostName"),  //"rabbitmq_service",
+                            UserName = rabbitConfig.GetValue<string>("UserName"), //"demo",
+                            Password = rabbitConfig.GetValue<string>("Password"), //"demo",
                             DispatchConsumersAsync = true
                         };
                     });
@@ -76,7 +78,7 @@ namespace ContosoCrafts.CheckoutProcessor
                         return poolProvider.Create(policy);
                     });
 
-                    services.AddDistributedTracing(Configuration, 
+                    services.AddDistributedTracing(Configuration,
                         builder => builder.UseZipkinWithTraceOptions(services));
 
                     // Worker services
