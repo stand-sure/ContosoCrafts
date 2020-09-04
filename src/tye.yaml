@@ -3,14 +3,22 @@ services:
   # Contoso Application
   - name: checkout-processor
     project: ContosoCrafts.CheckoutProcessor/ContosoCrafts.CheckoutProcessor.csproj
+    tags:
+      - app
+
   - name: products-api
     project: ContosoCrafts.ProductsApi/ContosoCrafts.ProductsApi.csproj
+    tags:
+      - app
+
   - name: website
     project: ContosoCrafts.Website/ContosoCrafts.Website.csproj
+    tags:
+      - app
 
   # Infrastructure
   - name: mongo-service
-    image: mongo:4.2.8
+    image: mongo:4.2.9
     env:
       - name: MONGO_INITDB_ROOT_USERNAME
         value: admin
@@ -26,81 +34,94 @@ services:
       - source: ./productdata/populate.sh
         target: /docker-entrypoint-initdb.d/populate.sh
     bindings:
-      - port: 27017
+      - name: mongo-port
+        port: 27017
         containerPort: 27017
+    tags:
+      - infra
 
-  # - name: rabbitmq-service
-  #   image: "rabbitmq:3.8.5-management"
-  #   env:
-  #     - name: RABBITMQ_DEFAULT_USER
-  #       value: demo
-  #     - name: RABBITMQ_DEFAULT_PASS
-  #       value: demo
-  #     - name: RABBITMQ_ERLANG_COOKIE
-  #       value: demo_cookie_1234
-  #     - name: RABBITMQ_DEFAULT_VHOST
-  #       value: contoso_steeltoe
-  #   bindings:
-  #     - name: amqp-port
-  #     - port: 5672
-  #       containerPort: 5672
-  #     - name: api-ui
-  #       port: 15672
-  #       containerPort: 15672
+  - name: rabbitmq-service
+    image: "rabbitmq:3.8.5-management"
+    env:
+      - name: RABBITMQ_DEFAULT_USER
+        value: demo
+      - name: RABBITMQ_DEFAULT_PASS
+        value: demo
+      - name: RABBITMQ_ERLANG_COOKIE
+        value: demo_cookie_1234
+      - name: RABBITMQ_DEFAULT_VHOST
+        value: contoso_steeltoe
+    bindings:
+      - name: rabbit-amqp-port
+        port: 5672
+        containerPort: 5672
+      - name: rabbit-api-ui
+        port: 15672
+        containerPort: 15672
+    tags:
+      - infra
 
-  # - name: "redis_service"
-  #   image: "redis:6.0.5-alpine"
-  #   args: "redis-server /usr/local/etc/redis/redis.conf"
-  #   bindings:
-  #     - name: ingestion
-  #       port: 6379
-  #       containerPort: 6379
-  #   volumes:
-  #     - source: redis.conf
-  #       target: /usr/local/etc/redis/redis.conf
+  - name: redis-service
+    image: "redis:6.0.5-alpine"
+    args: "redis-server /usr/local/etc/redis/redis.conf"
+    bindings:
+      - name: redis-port
+        port: 6379
+        containerPort: 6379
+    volumes:
+      - source: redis.conf
+        target: /usr/local/etc/redis/redis.conf
+    tags:
+      - infra
 
-  # - name: zipkin-service
-  #   image: "openzipkin/zipkin:2.21.5"
-  #   bindings:
-  #     - name: api-ui
-  #       port: 9411
-  #       containerPort: 9411
+  - name: zipkin-service
+    image: "openzipkin/zipkin:2.21.5"
+    bindings:
+      - name: api-ui
+        port: 9411
+        containerPort: 9411
+    tags:
+      - infra
 
-  # - name: seq-service
-  #   image: datalust/seq:2020.1
-  #   env:
-  #     - name: ACCEPT_EULA
-  #       value: Y
-  #   bindings:
-  #     - name: api-ui
-  #       port: 8191
-  #       containerPort: 80
-  #     - name: fluentbit-gelf
-  #       port: 12201
-  #       containerPort: 12201
-  #       protocol: UDP
-  #   volumes:
-  #     - source: ./contoso_tmp/seq/data
-  #       target: /data
+  - name: seq-service
+    image: datalust/seq:2020.1
+    env:
+      - name: ACCEPT_EULA
+        value: Y
+    bindings:
+      - name: api-ui
+        port: 8191
+        containerPort: 80
+      - name: fluentbit-gelf
+        port: 12201
+        containerPort: 12201
+        protocol: UDP
+    volumes:
+      - source: ./contoso_tmp/seq/data
+        target: /data
+    tags:
+      - infra
 
-  # - name: fluentbit-service
-  #   image: fluent/fluent-bit:1.5.2
-  #   bindings:
-  #     - name: ingestion
-  #       port: 24224
-  #       containerPort: 24224
-  #   volumes:
-  #     - source: ./fluent-bit.conf
-  #       target: /fluent-bit/etc/fluent-bit.conf
-
-  # - name: consul-service
-  #   image: consul:1.8.0
-  #   #restart: unless-stopped ??
-  #   bindings:      
-  #     - name: api-ui
-  #       port: 8500
-  #       containerPort: 8500
-  #   args: "consul agent -dev -config-dir /etc/consul.d"
-  #   volumes:
-  #     - source: consul.server.json
-  #       target: /etc/consul.d/consul.server.json
+  - name: fluentbit-service
+    image: fluent/fluent-bit:1.5.2
+    bindings:
+      - name: ingestion
+        port: 24224
+        containerPort: 24224
+    volumes:
+      - source: ./fluent-bit.conf
+        target: /fluent-bit/etc/fluent-bit.conf
+    tags:
+      - infra
+  - name: consul-service
+    image: consul:1.8.0
+    bindings:
+      - name: api-ui
+        port: 8500
+        containerPort: 8500
+    args: "consul agent -dev -config-dir /etc/consul.d"
+    volumes:
+      - source: consul.server.json
+        target: /etc/consul.d/consul.server.json
+    tags:
+      - infra
