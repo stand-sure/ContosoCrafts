@@ -21,7 +21,7 @@ services:
     logging: *default-logging
 
   website_dapr:
-    image: "daprio/daprd:0.9.0"
+    image: "daprio/daprd:0.10.0"
     command:
       [
         "./daprd",
@@ -58,7 +58,7 @@ services:
     logging: *default-logging
 
   productsapi_dapr:
-    image: "daprio/daprd:0.9.0"
+    image: "daprio/daprd:0.10.0"
     command:
       [
         "./daprd",
@@ -95,7 +95,7 @@ services:
     logging: *default-logging
 
   checkoutprocessor_dapr:
-    image: "daprio/daprd:0.9.0"
+    image: "daprio/daprd:0.10.0"
     command:
       [
         "./daprd",
@@ -124,7 +124,7 @@ services:
 
   ##### Dapr Placement #####
   placement:
-    image: "daprio/placement:0.9.0"
+    image: "daprio/placement:0.10.0"
     container_name: "placement"
     command: ["./placement", "-port", "6000"]
     ports:
@@ -135,5 +135,5 @@ services:
 
 networks:
   default:
-    name: dapr_network
-    driver: bridge
+    external:
+      name: dapr_network

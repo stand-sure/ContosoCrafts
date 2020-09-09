@@ -19,7 +19,7 @@ namespace ContosoCrafts.CheckoutProcessor.Controllers
         {
             var payload = new[]
             {
-                new {topic= "checkout", route = "checkout" }
+                new {pubsubname="rabbitmqbus", topic= "checkout", route = "checkout" }
             };
             return Ok(payload);
         }
