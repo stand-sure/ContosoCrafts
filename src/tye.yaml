@@ -1,24 +1,31 @@
 name: contosocrafts
+network: contosotye
 services:
   # Contoso Application
   - name: checkout-processor
     project: ContosoCrafts.CheckoutProcessor/ContosoCrafts.CheckoutProcessor.csproj
+    env:
+      - name: DOTNET_ENVIRONMENT
+        value: Tye 
     tags:
       - app
+      - processor
 
   - name: products-api
     project: ContosoCrafts.ProductsApi/ContosoCrafts.ProductsApi.csproj
     tags:
       - app
+      - productsapi
 
   - name: website
     project: ContosoCrafts.Website/ContosoCrafts.Website.csproj
     tags:
       - app
+      - website
 
   # Infrastructure
   - name: mongo-service
-    image: mongo:4.2.9
+    image: mongo:4.4.0
     env:
       - name: MONGO_INITDB_ROOT_USERNAME
         value: admin
@@ -34,14 +41,15 @@ services:
       - source: ./productdata/populate.sh
         target: /docker-entrypoint-initdb.d/populate.sh
     bindings:
-      - name: mongo-port
+      - name: serviceport
         port: 27017
         containerPort: 27017
     tags:
       - infra
+      - mongo
 
   - name: rabbitmq-service
-    image: "rabbitmq:3.8.5-management"
+    image: "rabbitmq:3.8.8-management"
     env:
       - name: RABBITMQ_DEFAULT_USER
         value: demo
@@ -52,20 +60,20 @@ services:
       - name: RABBITMQ_DEFAULT_VHOST
         value: contoso_steeltoe
     bindings:
-      - name: rabbit-amqp-port
+      - name: serviceport
         port: 5672
         containerPort: 5672
-      - name: rabbit-api-ui
+      - name: piui
         port: 15672
         containerPort: 15672
     tags:
-      - infra
+      - infra      
 
   - name: redis-service
-    image: "redis:6.0.5-alpine"
+    image: "redis:6.0.7-alpine"
     args: "redis-server /usr/local/etc/redis/redis.conf"
     bindings:
-      - name: redis-port
+      - name: serviceport
         port: 6379
         containerPort: 6379
     volumes:
@@ -75,24 +83,25 @@ services:
       - infra
 
   - name: zipkin-service
-    image: "openzipkin/zipkin:2.21.5"
+    image: "openzipkin/zipkin:2.21.7"
     bindings:
-      - name: api-ui
+      - name: serviceport
         port: 9411
         containerPort: 9411
     tags:
       - infra
+      - zipkin
 
   - name: seq-service
-    image: datalust/seq:2020.1
+    image: datalust/seq:2020.2
     env:
       - name: ACCEPT_EULA
         value: Y
     bindings:
-      - name: api-ui
+      - name: serviceport
         port: 8191
         containerPort: 80
-      - name: fluentbit-gelf
+      - name: gelf
         port: 12201
         containerPort: 12201
         protocol: UDP
@@ -101,27 +110,29 @@ services:
         target: /data
     tags:
       - infra
+      - seq
+  
+  - name: eureka-service
+    image: steeltoeoss/eureka-server:2.0
+    bindings:
+      - name: serviceport
+        port: 8761
+        containerPort: 8761
+    tags:
+      - infra
+      - eureka
+        
 
-  - name: fluentbit-service
-    image: fluent/fluent-bit:1.5.2
-    bindings:
-      - name: ingestion
-        port: 24224
-        containerPort: 24224
-    volumes:
-      - source: ./fluent-bit.conf
-        target: /fluent-bit/etc/fluent-bit.conf
-    tags:
-      - infra
-  - name: consul-service
-    image: consul:1.8.0
-    bindings:
-      - name: api-ui
-        port: 8500
-        containerPort: 8500
-    args: "consul agent -dev -config-dir /etc/consul.d"
-    volumes:
-      - source: consul.server.json
-        target: /etc/consul.d/consul.server.json
-    tags:
-      - infra
+  # - name: consul-service
+  #   image: consul:1.8.3
+  #   bindings:
+  #     - name: serviceport
+  #       port: 8500
+  #       containerPort: 8500
+  #   args: "consul agent -dev -config-dir /etc/consul.d"
+  #   volumes:
+  #     - source: consul.server.json
+  #       target: /etc/consul.d/consul.server.json
+  #   tags:
+  #     - infra
+  #     - consul
