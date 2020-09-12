@@ -330,4 +330,7 @@ ASALocalRun/
 **/.DS_Store
 
 # application temp directory
-contoso_tmp
+contoso_tmp/
+
+# tye folder
+.tye/
