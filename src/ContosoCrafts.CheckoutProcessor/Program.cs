@@ -10,6 +10,7 @@ using Microsoft.Extensions.ObjectPool;
 using RabbitMQ.Client;
 using Serilog;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Eureka;
 using Steeltoe.Management.Tracing;
 
 namespace ContosoCrafts.CheckoutProcessor
@@ -31,7 +32,10 @@ namespace ContosoCrafts.CheckoutProcessor
             try
             {
                 Log.ForContext<Program>().Information("Starting host");
-                CreateHostBuilder(args).Build().Run();
+                var host = CreateHostBuilder(args).Build();
+                var hostEnv = host.Services.GetRequiredService<IHostEnvironment>();
+                Log.ForContext<Program>().Information($"Host Environment: {hostEnv.EnvironmentName}");
+                host.Run();
                 return 0;
             }
             catch (Exception ex)
@@ -49,7 +53,7 @@ namespace ContosoCrafts.CheckoutProcessor
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .AddServiceDiscovery()
+                .AddServiceDiscovery(opts => opts.UseEureka())                
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
@@ -78,12 +82,12 @@ namespace ContosoCrafts.CheckoutProcessor
                         return poolProvider.Create(policy);
                     });
 
-                    services.AddDistributedTracing(Configuration,
-                        builder => builder.UseZipkinWithTraceOptions(services));
+                     services.AddDistributedTracing(Configuration,
+                         builder => builder.UseZipkinWithTraceOptions(services));
 
                     // Worker services
-                    services.AddHostedService<BootstrapWorker>();
-                    services.AddHostedService<ProcessorWorker>();
+                   // services.AddHostedService<BootstrapWorker>();
+                   // services.AddHostedService<ProcessorWorker>();
                 });
     }
 }
