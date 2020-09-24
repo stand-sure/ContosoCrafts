@@ -9,6 +9,7 @@ namespace ContosoCrafts.CheckoutProcessor.Services
 
         public RabbitModelPooledObjectPolicy(IConnectionFactory connectionFactory)
         {
+            //TODO - Back off strategy
             _connection = connectionFactory.CreateConnection(Constants.APPLICATION_NAME);
         }
 

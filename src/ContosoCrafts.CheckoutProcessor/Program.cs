@@ -17,10 +17,11 @@ namespace ContosoCrafts.CheckoutProcessor
 {
     public class Program
     {
+        public readonly static string HOST_ENVIRONMENT = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
         public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+            .AddJsonFile($"appsettings.{HOST_ENVIRONMENT}.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
         public static int Main(string[] args)
@@ -32,10 +33,8 @@ namespace ContosoCrafts.CheckoutProcessor
             try
             {
                 Log.ForContext<Program>().Information("Starting host");
-                var host = CreateHostBuilder(args).Build();
-                var hostEnv = host.Services.GetRequiredService<IHostEnvironment>();
-                Log.ForContext<Program>().Information($"Host Environment: {hostEnv.EnvironmentName}");
-                host.Run();
+                Log.ForContext<Program>().Information($"Enivonrment {HOST_ENVIRONMENT}");
+                CreateHostBuilder(args).Build().Run();
                 return 0;
             }
             catch (Exception ex)
@@ -53,7 +52,7 @@ namespace ContosoCrafts.CheckoutProcessor
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .AddServiceDiscovery(opts => opts.UseEureka())                
+                .AddServiceDiscovery(opts => opts.UseEureka())
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
@@ -62,13 +61,13 @@ namespace ContosoCrafts.CheckoutProcessor
                     services.AddSingleton<IConnectionFactory, ConnectionFactory>(provider =>
                     {
                         var rabbitConfig = Configuration.GetSection("rabbitmq");
-                        
+
                         return new ConnectionFactory
                         {
                             VirtualHost = Constants.RABBITMQ_VHOST,
-                            HostName = rabbitConfig.GetValue<string>("HostName"),  //"rabbitmq_service",
-                            UserName = rabbitConfig.GetValue<string>("UserName"), //"demo",
-                            Password = rabbitConfig.GetValue<string>("Password"), //"demo",
+                            HostName = rabbitConfig.GetValue<string>("HostName"),
+                            UserName = rabbitConfig.GetValue<string>("UserName"),
+                            Password = rabbitConfig.GetValue<string>("Password"),
                             DispatchConsumersAsync = true
                         };
                     });
@@ -82,12 +81,11 @@ namespace ContosoCrafts.CheckoutProcessor
                         return poolProvider.Create(policy);
                     });
 
-                     services.AddDistributedTracing(Configuration,
-                         builder => builder.UseZipkinWithTraceOptions(services));
+                    services.AddDistributedTracing(Configuration,
+                        builder => builder.UseZipkinWithTraceOptions(services));
 
-                    // Worker services
-                   // services.AddHostedService<BootstrapWorker>();
-                   // services.AddHostedService<ProcessorWorker>();
+                    // Worker services                    
+                    services.AddHostedService<ProcessorWorker>();
                 });
     }
 }
