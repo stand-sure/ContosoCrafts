@@ -1,24 +1,39 @@
 name: contosocrafts
 network: contosotye
+
 services:
   # Contoso Application
   - name: checkout-processor
     project: ContosoCrafts.CheckoutProcessor/ContosoCrafts.CheckoutProcessor.csproj
+    bindings:
+      - protocol: http
     env:
       - name: DOTNET_ENVIRONMENT
-        value: Tye 
+        value: Tye
     tags:
       - app
       - processor
 
   - name: products-api
     project: ContosoCrafts.ProductsApi/ContosoCrafts.ProductsApi.csproj
+    bindings:
+      - protocol: http
+        port: 5005
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Tye
     tags:
       - app
       - productsapi
 
   - name: website
     project: ContosoCrafts.Website/ContosoCrafts.Website.csproj
+    bindings:
+      - protocol: http
+        port: 5000
+    env:
+      - name: ASPNETCORE_ENVIRONMENT
+        value: Tye
     tags:
       - app
       - website
@@ -66,8 +81,10 @@ services:
       - name: piui
         port: 15672
         containerPort: 15672
+        protocol: http
     tags:
-      - infra      
+      - infra
+      - rabbitmq
 
   - name: redis-service
     image: "redis:6.0.7-alpine"
@@ -81,6 +98,7 @@ services:
         target: /usr/local/etc/redis/redis.conf
     tags:
       - infra
+      - redis
 
   - name: zipkin-service
     image: "openzipkin/zipkin:2.21.7"
@@ -88,6 +106,7 @@ services:
       - name: serviceport
         port: 9411
         containerPort: 9411
+        protocol: http
     tags:
       - infra
       - zipkin
@@ -98,31 +117,31 @@ services:
       - name: ACCEPT_EULA
         value: Y
     bindings:
-      - name: serviceport
+      - name: uiport
         port: 8191
         containerPort: 80
-      - name: gelf
-        port: 12201
-        containerPort: 12201
-        protocol: UDP
+        protocol: http
+      - name: serviceport
+        port: 5341
+        containerPort: 5341
+        protocol: http
     volumes:
       - source: ./contoso_tmp/seq/data
         target: /data
     tags:
       - infra
       - seq
-  
+
   - name: eureka-service
     image: steeltoeoss/eureka-server:2.0
     bindings:
       - name: serviceport
         port: 8761
         containerPort: 8761
+        protocol: http
     tags:
       - infra
       - eureka
-        
-
   # - name: consul-service
   #   image: consul:1.8.3
   #   bindings:

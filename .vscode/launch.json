@@ -2,11 +2,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        },
+        
+        {
             "name": "Docker Website Attach",
             "type": "docker",
             "request": "attach",
             "platform": "netCore",
-            "containerName": "contoso_website",
             "sourceFileMap": {
                 "/src": "${workspaceFolder}/src/ContosoCrafts.WebSite"
             }
@@ -80,5 +86,6 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
         },
+
     ]
 }
