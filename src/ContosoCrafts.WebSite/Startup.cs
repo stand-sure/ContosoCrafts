@@ -38,10 +38,12 @@ namespace ContosoCrafts.WebSite
 
             services.AddStackExchangeRedisCache(options =>
             {
+                var redisConfig = Configuration.GetSection("redis");
+
                 options.ConfigurationOptions = new ConfigurationOptions
                 {
-                    Password = "S0m3P@$$w0rd",
-                    EndPoints = { "redis_service:6379" }
+                    Password = redisConfig.GetValue<string>("password"),
+                    EndPoints = { redisConfig.GetValue<string>("endpoint") }
                 };
 
                 // This allows partitioning a single backend cache for use with multiple apps/services.
@@ -52,12 +54,14 @@ namespace ContosoCrafts.WebSite
 
             services.AddSingleton<IConnectionFactory, ConnectionFactory>(provider =>
             {
+                var rabbitConfig = Configuration.GetSection("rabbitmq");
+
                 return new ConnectionFactory
                 {
                     VirtualHost = Constants.RABBITMQ_VHOST,
-                    HostName = "rabbitmq_service",
-                    UserName = "demo",
-                    Password = "demo"
+                    HostName = rabbitConfig.GetValue<string>("HostName"),
+                    UserName = rabbitConfig.GetValue<string>("UserName"),
+                    Password = rabbitConfig.GetValue<string>("Password"),
                 };
             });
 
@@ -75,7 +79,7 @@ namespace ContosoCrafts.WebSite
             services.AddHealthChecks();
             services.AddControllers();
             services.AddScoped<IEventAggregator, EventAggregator.Blazor.EventAggregator>();
-            
+
             services.AddDistributedTracing(Configuration, builder => builder.UseZipkinWithTraceOptions(services));
         }
 
@@ -92,7 +96,6 @@ namespace ContosoCrafts.WebSite
             {
                 endpoints.MapHealthChecks("/health");
                 endpoints.MapRazorPages();
-                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
             });
         }
