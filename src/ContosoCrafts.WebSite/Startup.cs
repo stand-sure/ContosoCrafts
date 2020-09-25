@@ -1,3 +1,4 @@
+using System;
 using ContosoCrafts.WebSite.Services;
 using EventAggregator.Blazor;
 using Microsoft.AspNetCore.Builder;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.ObjectPool;
+using Polly;
 using RabbitMQ.Client;
 using Serilog;
 using StackExchange.Redis;
@@ -34,10 +36,17 @@ namespace ContosoCrafts.WebSite
                     c.DefaultRequestHeaders.Add("User-Agent", "contoso-app");
                 })
                 .AddHttpMessageHandler<DiscoveryHttpMessageHandler>()
+                .AddTransientHttpErrorPolicy(policy =>
+                    policy.WaitAndRetryAsync(1, (retry, ctx) => TimeSpan.FromSeconds(retry * 2),
+                        (msg, ts, count, ctx) =>
+                        {
+                            Log.ForContext<SteeltoeProductService>().Warning("Retrying request attempt: {attempt}", count);
+                        }))
                 .AddTypedClient<IProductService, SteeltoeProductService>();
 
             services.AddStackExchangeRedisCache(options =>
             {
+                
                 var redisConfig = Configuration.GetSection("redis");
 
                 options.ConfigurationOptions = new ConfigurationOptions

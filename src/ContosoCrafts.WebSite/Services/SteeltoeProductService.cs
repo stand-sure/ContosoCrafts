@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -21,6 +22,7 @@ namespace ContosoCrafts.WebSite.Services
             _logger = logger;
             _httpClient = httpClient;
         }
+
         public async Task AddRating(string productId, int rating)
         {
             var payload = JsonSerializer.Serialize(new { productId, rating });
@@ -31,17 +33,25 @@ namespace ContosoCrafts.WebSite.Services
 
         public async Task<IEnumerable<Product>> GetProducts()
         {
-            var resp = await _httpClient.GetAsync(PRODUCTS_REQUEST_URI);
-            if (!resp.IsSuccessStatusCode) //TODO: Successful if service not registered
+            try
             {
-                // probably log some stuff here
+                var resp = await _httpClient.GetAsync(PRODUCTS_REQUEST_URI);
+                if (!resp.IsSuccessStatusCode)
+                {
+                    _logger.LogError("No products available");
+                    return Enumerable.Empty<Product>();
+                }
+                var contentStream = await resp.Content.ReadAsStreamAsync();
+                var products = await JsonSerializer.DeserializeAsync<IEnumerable<Product>>(contentStream,
+                               new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                return products;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(ex, "Unable to retrieve products");
                 return Enumerable.Empty<Product>();
             }
-            var contentStream = await resp.Content.ReadAsStreamAsync();
-            var products = await JsonSerializer.DeserializeAsync<IEnumerable<Product>>(contentStream,
-                           new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            return products;
         }
     }
 }
