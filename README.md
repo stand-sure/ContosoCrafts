@@ -1,7 +1,35 @@
-# ContosoCrafts (Original)
+# ContosoCrafts (Orleans Edition)
 
-There's nothing interesting to see here in this **branch**. It's an unmodified fork of the [Contoso Crafts](https://github.com/dotnet-presentations/ContosoCrafts) sample projects. All the interesting stuff lives in the other branches and that's most likely what you want to take a look at.
+## Spinning up the environment
 
-## Other Branches
-* [dapr](https://github.com/cecilphillip/ContosoCrafts/tree/dapr) - Constoso Crafts structured as a microservice, using [Dapr](https://dapr.io/) and running in [Docker-compose](https://docs.docker.com/compose/)
-* [steeltoe](https://github.com/cecilphillip/ContosoCrafts/tree/steeltoe) - Constoso Crafts as a set of microservices, using the [Steeltoe](https://steeltoe.io/) libraries and running in [Docker-compose](https://docs.docker.com/compose/)
+First, spin up the supporting infrastructure components
+
+```bash
+> docker-compose -f docker-compose-infra.yml up -d
+```
+
+Next, launch the application containers and sidecars.
+
+```bash
+> docker-compose up -d
+```
+
+### Requirements
+
+- Docker
+- Visual Studio Code
+- .NET Core SDK
+
+## What's in the box
+
+### Application Components
+
+- [Website](src/ContosoCrafts.WebSite) - The main application UI
+- [Products API](src/ContosoCrafts.ProductsApi) - Orleans Silo co-hosted alongside an ASP.NET Core Web API.
+- [Checkout Processor](src/ContosoCrafts.CheckoutProcessor) - Optional additional Silo that bootstrapped using [Generic Host](https://docs.microsoft.com/dotnet/core/extensions/generic-host?WT.mc_id=dotnet-github-cephilli). This is just here to demo the custom placement strategy. It also matches up with the layouts of the other projects.
+
+### Infrastructure Components
+
+- [Redis](https://redis.io/) - State store and clustering
+- [MongoDB](https://docs.mongodb.com/) - Products data
+- [Seq](https://datalust.co/seq) - Log Aggregator

@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  ##### Website  #####
+  website:
+    build:
+      context: ./src/
+      dockerfile: Dockerfile.Website
+    container_name: contoso_website
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+
+  ##### API #####
+  productsapi:
+    build:
+      context: ./src/
+      dockerfile: Dockerfile.ProductsApi
+    env_file:
+      - .env
+
+  ##### Checkout Processor #####
+  checkoutprocessor:
+    build:
+      context: ./src/
+      dockerfile: Dockerfile.CheckoutProcessor
+    env_file:
+      - .env
+
+networks:
+  default:
+    external:
+      name: contoso_orleans_network

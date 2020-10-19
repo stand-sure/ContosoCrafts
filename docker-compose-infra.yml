@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  ##### MongoDB #####
+  mongodb:
+    container_name: mongo_service
+    image: mongo:4.4.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=contosocrafts
+    volumes:
+      - ./productdata/products.json:/data/products.json
+      - ./productdata/populate.sh:/docker-entrypoint-initdb.d/populate.sh
+      - ./contoso_tmp/mongo/data/db:/data/db
+    ports:
+      - "27017:27017"
+
+  ##### Redis #####
+  redis:
+    container_name: "redis_service"
+    image: "redis:6.0.8-alpine"
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+  ##### Seq #####
+  seq:
+    container_name: "seq_service"
+    image: datalust/seq:2020.3
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - ./contoso_tmp/seq/data:/data
+    ports:
+      - "8191:80"
+      - "5341:5341"          
+
+networks:
+  default:
+    name: contoso_orleans_network
+    driver: bridge
