@@ -1,4 +1,4 @@
-# ContosoCrafts (Original)
+# ContosoCrafts (Revised Edition)
 
 There's nothing interesting to see here in this **branch**. It's an unmodified fork of the [Contoso Crafts](https://github.com/dotnet-presentations/ContosoCrafts) sample projects. All the interesting stuff lives in the other branches and that's most likely what you want to take a look at.
 
