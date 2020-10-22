@@ -7,33 +7,31 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/ContosoCrafts.WebSite.csproj",
+                "${workspaceFolder}/src/ContosoCrafts.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "publish",
+            "label": "build website",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/ContosoCrafts.WebSite/ContosoCrafts.WebSite.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish website",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/src/ContosoCrafts.WebSite.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "watch",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "--project",
-                "${workspaceFolder}/src/ContosoCrafts.WebSite.csproj",
-                "run",
+                "${workspaceFolder}/src/ContosoCrafts.WebSite/ContosoCrafts.WebSite.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
