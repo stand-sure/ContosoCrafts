@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ContosoCrafts.WebSite.Models
 {
     public class ShoppingCartUpdated
@@ -6,4 +8,9 @@ namespace ContosoCrafts.WebSite.Models
     }
 
     public class CheckoutStarted { }
+    
+    public class CheckoutSubmitted
+    {
+        public IEnumerable<CartItem> Items { get; set; }
+    }
 }
