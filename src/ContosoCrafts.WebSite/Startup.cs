@@ -32,7 +32,6 @@ namespace ContosoCrafts.WebSite
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.AddHttpClient();
             services.AddControllers();
             services.AddMemoryCache();
 
