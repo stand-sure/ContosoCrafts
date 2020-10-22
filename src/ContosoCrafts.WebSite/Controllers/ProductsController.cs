@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using ContosoCrafts.WebSite.Models;
 using ContosoCrafts.WebSite.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,23 +17,18 @@ namespace ContosoCrafts.WebSite.Controllers
         public JsonFileProductService ProductService { get; }
 
         [HttpGet]
-        public IEnumerable<Product> Get()
+        public async Task<ActionResult> Get()
         {
-            return ProductService.GetProducts();
+            var products = await ProductService.GetProducts();
+            return Ok(products);
         }
 
         [HttpPatch]
-        public ActionResult Patch([FromBody] RatingRequest request)
+        public async Task<ActionResult> Patch([FromBody] RatingRequest request)
         {
-            ProductService.AddRating(request.ProductId, request.Rating);
-            
-            return Ok();
-        }
+            await ProductService.AddRating(request.ProductId, request.Rating);
 
-        public class RatingRequest
-        {
-            public string ProductId { get; set; }
-            public int Rating { get; set; }
+            return Ok();
         }
     }
 }

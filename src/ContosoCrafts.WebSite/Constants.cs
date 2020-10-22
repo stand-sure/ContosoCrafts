@@ -1,9 +1,8 @@
 namespace ContosoCrafts.WebSite
 {
-   public static class Constants
+    public static class Constants
     {
-        public const string STORE_NAME = "statestore";
-        public const string PUBSUB_NAME = "rabbitmqbus";
+        public const string CART_CACHE_KEY = "cart:checkout";
 
     }
 }
