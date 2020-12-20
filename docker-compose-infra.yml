@@ -68,6 +68,7 @@ services:
     container_name: "fluentbit_service"
     hostname: "fluentbit_service"
     ports:
+      - "2020:2020"
       - "24224:24224"
     volumes:
       - "./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro"
@@ -75,14 +76,23 @@ services:
   ##### Seq #####
   seq:
     container_name: "seq_service"
-    image: datalust/seq:2020.2
+    image: datalust/seq:2020.3
     environment:
       - ACCEPT_EULA=Y
     volumes:
       - ./contoso_tmp/seq/data:/data
     ports:
-      - "8191:80"
+      - "5341:80"
+
+  seq-input-gelf:
+    image: datalust/seq-input-gelf:latest
+    depends_on:
+      - seq
+    ports:
       - "12201:12201/udp"
+    environment:
+      SEQ_ADDRESS: "http://seq:5341"
+    restart: unless-stopped
 
 networks:
   default:
