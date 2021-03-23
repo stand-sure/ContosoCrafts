@@ -4,7 +4,7 @@ services:
   ##### MongoDB #####
   mongodb:
     container_name: mongo_service
-    image: mongo:4.4.0
+    image: mongo:4.4.4
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
@@ -18,7 +18,7 @@ services:
 
   ##### Rabbitmq #####
   rabbitmq:
-    image: "rabbitmq:3.8.8-management"
+    image: "rabbitmq:3.8.14-management"
     container_name: "rabbitmq_server"
     hostname: "rabbitmq_server"
     environment:
@@ -32,7 +32,7 @@ services:
   ##### Redis #####
   redis:
     container_name: "redis_service"
-    image: "redis:6.0.7-alpine"
+    image: "redis:6.2.1-alpine"
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     ports:
       - "6379:6379"
@@ -41,7 +41,7 @@ services:
 
   ##### Hashicorp Vault #####
   vault:
-    image: vault:1.4.3
+    image: vault:1.6.3
     container_name: vault_service
     cap_add:
       - IPC_LOCK
@@ -58,24 +58,25 @@ services:
   ##### Zipkin #####
   zipkin:
     container_name: "zipkin_service"
-    image: "openzipkin/zipkin:2.21.7"
+    image: "openzipkin/zipkin:2.23.2"
     ports:
       - 9411:9411
 
   ##### fluent-bit #####
   fluent-bit:
-    image: fluent/fluent-bit:1.5.5
+    image: fluent/fluent-bit:1.7.2
     container_name: "fluentbit_service"
     hostname: "fluentbit_service"
     ports:
-      - "24224:24224"
+      - 24224:24224 # Forward input plugin
+      - 24220:24220 # built-in HTTP Server
     volumes:
       - "./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro"
 
   ##### Seq #####
   seq:
     container_name: "seq_service"
-    image: datalust/seq:2020.2
+    image: datalust/seq:2021.2
     environment:
       - ACCEPT_EULA=Y
     volumes:
