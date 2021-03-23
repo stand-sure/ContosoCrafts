@@ -15,7 +15,7 @@ namespace ContosoCrafts.CheckoutProcessor
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
             services.AddControllers(opts =>
             {
                 opts.InputFormatters.Insert(0, new CloudEventJsonInputFormatter());

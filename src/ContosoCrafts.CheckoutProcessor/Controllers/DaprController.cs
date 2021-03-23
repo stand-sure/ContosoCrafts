@@ -1,4 +1,5 @@
-﻿using CloudNative.CloudEvents;
+﻿using System.Threading.Tasks;
+using CloudNative.CloudEvents;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -25,8 +26,9 @@ namespace ContosoCrafts.CheckoutProcessor.Controllers
         }
 
         [HttpPost("/checkout")]
-        public ActionResult CheckoutOrder(CloudEvent cloudEvent)
+        public async Task<ActionResult> CheckoutOrder()
         {
+            var cloudEvent = await this.Request.ReadCloudEventAsync();
             logger.LogDebug($"Cloud event {cloudEvent.Id} {cloudEvent.Type} {cloudEvent.DataContentType}");
             logger.LogInformation("Order received...");
             return Ok();
