@@ -83,7 +83,16 @@ services:
       - ./contoso_tmp/seq/data:/data
     ports:
       - "8191:80"
+
+  seq-input-gelf:
+    image: datalust/seq-input-gelf:latest
+    depends_on:
+      - seq_service
+    ports:
       - "12201:12201/udp"
+    environment:
+      SEQ_ADDRESS: "http://seq_service:5341"
+    restart: unless-stopped
 
 networks:
   default:
