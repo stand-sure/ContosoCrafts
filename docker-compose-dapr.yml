@@ -21,7 +21,7 @@ services:
     logging: *default-logging
 
   website_dapr:
-    image: "daprio/daprd:0.10.0"
+    image: "daprio/daprd:1.0.1"
     command:
       [
         "./daprd",
@@ -29,20 +29,16 @@ services:
         "website",
         "-app-port",
         "80",
-        "-placement-address",
-        "placement:6000",
         "-config",
         "/dapr/config.yaml",
         "-components-path",
-        "/dapr/components",
+        "/dapr/local",
       ]
     volumes:
-      - "./components/local:/dapr/components"
-      - "./components/config.yaml:/dapr/config.yaml"
+      - "./components:/dapr"
       - ./vault_dev_token:/vault/token
     depends_on:
       - website
-      - placement
     network_mode: "service:website"
     env_file:
       - .env
@@ -58,7 +54,7 @@ services:
     logging: *default-logging
 
   productsapi_dapr:
-    image: "daprio/daprd:0.10.0"
+    image: "daprio/daprd:1.0.1"
     command:
       [
         "./daprd",
@@ -66,20 +62,16 @@ services:
         "productsapi",
         "-app-port",
         "80",
-        "-placement-address",
-        "placement:6000",
         "-config",
         "/dapr/config.yaml",
         "-components-path",
-        "/dapr/components",
+        "/dapr/local",
       ]
     volumes:
-      - "./components/local:/dapr/components"
-      - "./components/config.yaml:/dapr/config.yaml"
+      - "./components:/dapr"
       - ./vault_dev_token:/vault/token
     depends_on:
       - productsapi
-      - placement
     network_mode: "service:productsapi"
     env_file:
       - .env
@@ -95,7 +87,7 @@ services:
     logging: *default-logging
 
   checkoutprocessor_dapr:
-    image: "daprio/daprd:0.10.0"
+    image: "daprio/daprd:1.0.1"
     command:
       [
         "./daprd",
@@ -103,34 +95,19 @@ services:
         "checkoutprocessor",
         "-app-port",
         "80",
-        "-placement-address",
-        "placement:6000",
         "-config",
         "/dapr/config.yaml",
         "-components-path",
-        "/dapr/components",
+        "/dapr/local",
       ]
     volumes:
-      - "./components/local:/dapr/components"
-      - "./components/config.yaml:/dapr/config.yaml"
+      - "./components:/dapr"
       - ./vault_dev_token:/vault/token
-    depends_on:
-      - placement
+    depends_on:      
       - checkoutprocessor
     env_file:
       - .env
     network_mode: "service:checkoutprocessor"
-    logging: *default-logging
-
-  ##### Dapr Placement #####
-  placement:
-    image: "daprio/placement:0.10.0"
-    container_name: "placement"
-    command: ["./placement", "-port", "6000"]
-    ports:
-      - "6000:6000"
-    env_file:
-      - .env
     logging: *default-logging
 
 networks:
