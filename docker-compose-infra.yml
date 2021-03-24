@@ -67,6 +67,8 @@ services:
     image: fluent/fluent-bit:1.7.2
     container_name: "fluentbit_service"
     hostname: "fluentbit_service"
+    depends_on:
+      - seq-input-gelf
     ports:
       - 24224:24224 # Forward input plugin
       - 24220:24220 # built-in HTTP Server
@@ -86,8 +88,9 @@ services:
 
   seq-input-gelf:
     image: datalust/seq-input-gelf:latest
+    container_name: "seq-input-gelf"
     depends_on:
-      - seq_service
+      - seq
     ports:
       - "12201:12201/udp"
     environment:
