@@ -51,7 +51,14 @@ services:
       - ./vault.hcl:/etc/vault/config.hcl
       - ./contoso_tmp/vault/file:/vault/file
       - ./contoso_tmp/vault/logs:/vault/logs
-    command: server -config=/etc/vault/config.hcl
+    # hcl configuration
+    # command: server -config=/etc/vault/config.hcl #
+    # in-memory setup
+    command: >-
+      server -dev -dev-root-token-id="dapr" -log-level=warn
+      -dev-listen-address="0.0.0.0:8200" 
+      
+      
     ports:
       - "8200:8200"
 
