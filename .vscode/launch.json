@@ -5,16 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Docker Website Attach",
-            "type": "docker",
-            "request": "attach",
-            "platform": "netCore",
-            "containerName": "contoso_website",
-            "sourceFileMap": {
-                "/src": "${workspaceFolder}/src/ContosoCrafts.WebSite"
-            }
-        },
-        {
             "name": "Docker API Attach",
             "type": "docker",
             "request": "attach",
@@ -30,26 +20,6 @@
             "platform": "netCore",
             "sourceFileMap": {
                 "/src": "${workspaceFolder}/src/ContosoCrafts.CheckoutProcessor"
-            }
-        },
-        {
-            "name": "Debug ContosoCrafts.WebSite",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build website",
-            "program": "${workspaceFolder}/src/ContosoCrafts.WebSite/bin/Debug/netcoreapp3.1/ContosoCrafts.WebSite.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/src/ContosoCrafts.WebSite",
-            "stopAtEntry": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
             }
         },
         {
@@ -77,15 +47,6 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
-        },
-        {
-            "name": "Docker Website Debug",
-            "type": "docker",
-            "request": "launch",
-            "preLaunchTask": "docker-run: website debug",
-            "netCore": {
-                "appProject": "${workspaceFolder}/src/ContosoCrafts.WebSite/ContosoCrafts.WebSite.csproj"
-            }
         },
         {
             "name": "Docker API Debug",
