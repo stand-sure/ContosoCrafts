@@ -23,11 +23,31 @@
             }
         },
         {
+            "name": "Debug ContosoCrafts.Web.Server",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build web.server",
+            "program": "${workspaceFolder}/src/ContosoCrafts.Web.Server/bin/Debug/net5.0/ContosoCrafts.Web.Server.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/ContosoCrafts.Web.Server",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
             "name": "Debug ContosoCrafts.ProductsApi",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build api",
-            "program": "${workspaceFolder}/src/ContosoCrafts.ProductsApi/bin/Debug/netcoreapp3.1/ContosoCrafts.ProductsApi.dll",
+            "program": "${workspaceFolder}/src/ContosoCrafts.ProductsApi/bin/Debug/net5.0/ContosoCrafts.ProductsApi.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/ContosoCrafts.ProductsApi",
             "stopAtEntry": false,
