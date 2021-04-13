@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -22,61 +24,52 @@ namespace ContosoCrafts.Web.Client.Shared
 
         protected IEnumerable<Product> products = null;
         protected Product selectedProduct;
-        protected string selectedProductId;
 
         protected override async Task OnInitializedAsync()
         {
             if (products == null)
             {
                 var client = ClientFactory.CreateClient("localapi");
-                products = await client.GetFromJsonAsync<IEnumerable<Product>>("/api/products");
+                //products = await client.GetFromJsonAsync<IEnumerable<Product>>("/api/products");
+                products = await client.GetFromJsonAsync<IEnumerable<Product>>("/data/products.json");
             }
         }
-        protected async Task SelectProduct(string productId)
+
+        protected void SelectProduct(string productId)
         {
-            selectedProductId = productId;
-            var client = ClientFactory.CreateClient("localapi");
-            selectedProduct = (await client.GetFromJsonAsync<Product>("/api/products"));
+            selectedProduct = products.Where(p => p.Id == productId).SingleOrDefault();
         }
 
-        protected async Task SubmitRating(int rating)
+        public async Task SubmitRating(int rating)
         {
             var client = ClientFactory.CreateClient("localapi");
-            await client.PutAsJsonAsync($"/api/products/{selectedProduct}", new { rating = rating });
-            await SelectProduct(selectedProductId);
-            StateHasChanged();
+            var ratings = selectedProduct.Ratings;
+
+            // resize ratings array
+            Array.Resize(ref ratings, ratings.Length + 1);
+            ratings[^1] = rating;
+            selectedProduct.Ratings = ratings;
+
+            await client.PutAsJsonAsync($"/api/products/{selectedProduct.Id}", new { rating = rating });
         }
 
         protected async Task AddToCart(string productId, string title)
         {
             // get state
             var client = ClientFactory.CreateClient("localapi");
-            var resp = await client.GetAsync($"api/state/cart");
+            Dictionary<string, CartItem> state = await client.GetFromJsonAsync<Dictionary<string, CartItem>>($"api/state/cart");
 
-            if (!resp.IsSuccessStatusCode) return;
-
-            Dictionary<string, CartItem> state = null;
-            if (resp.StatusCode == HttpStatusCode.NoContent)
+            if (state.ContainsKey(productId))
             {
-                // Empty cart
-                state = new Dictionary<string, CartItem> { [productId] = new CartItem { Title = title, Quantity = 1 } };
+                // Product already in cart
+                CartItem selectedItem = state[productId];
+                selectedItem.Quantity++;
+                state[productId] = selectedItem;
             }
-            else if (resp.StatusCode == HttpStatusCode.OK)
+            else
             {
-                var responseBody = await resp.Content.ReadAsStringAsync();
-                state = JsonSerializer.Deserialize<Dictionary<string, CartItem>>(responseBody);
-                if (state.ContainsKey(productId))
-                {
-                    // Product already in cart
-                    CartItem selectedItem = state[productId];
-                    selectedItem.Quantity++;
-                    state[productId] = selectedItem;
-                }
-                else
-                {
-                    // Add product to car
-                    state[productId] = new CartItem { Title = title, Quantity = 1 };
-                }
+                // Add product to cart
+                state[productId] = new CartItem { Title = title, Quantity = 1 };
             }
 
             // persist state in dapr           
@@ -84,5 +77,4 @@ namespace ContosoCrafts.Web.Client.Shared
             await EventAggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = state.Keys.Count });
         }
     }
-
 }

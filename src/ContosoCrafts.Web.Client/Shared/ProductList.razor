@@ -2,7 +2,7 @@
 
 <div>
     <div class="card-columns">
-        @if(products != null)
+        @if (products != null)
         {
             @foreach (var product in products)
             {
@@ -14,8 +14,8 @@
                     </div>
                     <div class="card-footer">
                         <small class="text-muted">
-                            <button @onclick="(e => SelectProduct(product.Id))"
-                                    data-toggle="modal" data-target="#productModal" class="btn btn-primary">
+                            <button @onclick="(e => SelectProduct(product.Id))" data-toggle="modal" data-target="#productModal"
+                        class="btn btn-primary">
                                 Info
                             </button>
                             <button class="btn btn-primary" @onclick="(e => AddToCart(product.Id, product.Title))">
@@ -27,5 +27,5 @@
             }
         }
     </div>
-        <ProductModal Product="@selectedProduct" SubmitRating="@SubmitRating"></ProductModal>
+    <ProductModal Product="selectedProduct" OnSubmitRating="SubmitRating"></ProductModal>
 </div>

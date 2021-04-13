@@ -30,11 +30,11 @@
                     var currentStar = i;
                     if (i <= currentRating)
                     {
-                        <span class="fa fa-star checked" @onclick="(e => SubmitRating(currentStar))"></span>
+                        <span class="fa fa-star checked" @onclick="(e => SubmitRating(e,currentStar))"></span>
                     }
                     else
                     {
-                        <span class="fa fa-star" @onclick="(e => SubmitRating(currentStar))"></span>
+                        <span class="fa fa-star" @onclick="(e => SubmitRating(e, currentStar))"></span>
                     }
                 }
             </div>
@@ -47,7 +47,7 @@
     public Product Product { get; set; }
 
     [Parameter]
-    public Func<int, Task> SubmitRating { get; set; }
+    public EventCallback<int> OnSubmitRating { get; set; }
 
     int currentRating = 0;
     int voteCount = 0;
@@ -73,5 +73,11 @@
             voteLabel = voteCount > 1 ? "Votes" : "Vote";
             currentRating = Product.Ratings.Sum() / voteCount;
         }
+    }
+
+    protected async Task SubmitRating(MouseEventArgs eventArgs, int rating)
+    {
+        await OnSubmitRating.InvokeAsync(rating);
+        StateHasChanged();
     }
 }
