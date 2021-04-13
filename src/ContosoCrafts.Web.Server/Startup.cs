@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ContosoCrafts.Web.Server.Services;
+using System;
 
 namespace ContosoCrafts.Web.Server
 {
@@ -18,11 +19,15 @@ namespace ContosoCrafts.Web.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddRazorPages();
-
-            services.AddSingleton<IProductService, DaprProductService>();
+            services.AddHttpClient("dapr", c =>
+            {
+                c.BaseAddress = new Uri("http://localhost:3500");
+                c.DefaultRequestHeaders.Add("User-Agent", typeof(Program).Assembly.GetName().Name);
+            });
+            services.AddTransient<IProductService, DaprProductService>();
+            services.AddTransient<IStateService, DaprStateService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
