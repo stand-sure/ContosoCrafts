@@ -11,17 +11,17 @@ services:
   ##### Website & DAPR Sidecar #####
   website:
     build:
-      context: ./src/ContosoCrafts.WebSite
-      dockerfile: Dockerfile
+      context: ./src
+      dockerfile: Dockerfile.Web.Server
     container_name: contoso_website
     env_file:
       - .env
     ports:
-      - "80:80"
+      - "8080:80"
     logging: *default-logging
 
   website_dapr:
-    image: "daprio/daprd:1.0.1"
+    image: "daprio/daprd:1.1.1"
     command:
       [
         "./daprd",
@@ -47,14 +47,16 @@ services:
   ##### API & DAPR Sidecar #####
   productsapi:
     build:
-      context: ./src/ContosoCrafts.ProductsApi
-      dockerfile: Dockerfile
+      context: ./src
+      dockerfile: Dockerfile.ProductsApi
     env_file:
       - .env
+    ports:
+      - "8181:80"
     logging: *default-logging
 
   productsapi_dapr:
-    image: "daprio/daprd:1.0.1"
+    image: "daprio/daprd:1.1.1"
     command:
       [
         "./daprd",
@@ -80,14 +82,14 @@ services:
   ##### Checkout Processor & DAPR Sidecar #####
   checkoutprocessor:
     build:
-      context: ./src/ContosoCrafts.CheckoutProcessor
-      dockerfile: Dockerfile
+      context: ./src
+      dockerfile: Dockerfile.CheckoutProcessor
     env_file:
       - .env
     logging: *default-logging
 
   checkoutprocessor_dapr:
-    image: "daprio/daprd:1.0.1"
+    image: "daprio/daprd:1.1.1"
     command:
       [
         "./daprd",
@@ -103,7 +105,7 @@ services:
     volumes:
       - "./components:/dapr"
       - ./vault_dev_token:/vault/token
-    depends_on:      
+    depends_on:
       - checkoutprocessor
     env_file:
       - .env
