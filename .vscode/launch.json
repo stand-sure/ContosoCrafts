@@ -32,6 +32,19 @@
             }
         },
         {
+            "name": "Debug Hosted Blazor WASM App",
+            "type": "blazorwasm",
+            "request": "launch",
+            "preLaunchTask": "build web.server",
+            "hosted": true,
+            "program": "${workspaceFolder}/src/ContosoCrafts.Web.Server/bin/Debug/net5.0/ContosoCrafts.Web.Server.dll",
+            "cwd": "${workspaceFolder}/src/ContosoCrafts.Web.Server",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "browser": "edge"
+        },
+        {
             "name": "Debug ContosoCrafts.Web.Server",
             "type": "coreclr",
             "request": "launch",
@@ -47,9 +60,6 @@
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
-            }
         },
         {
             "name": "Debug ContosoCrafts.ProductsApi",
@@ -66,10 +76,14 @@
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
             }
+        },
+        {
+            "type": "blazorwasm",
+            "request": "launch",
+            "name": "Debug Blazor WASM",
+            "url": "http://localhost:5000",
+            "browser": "chrome"
         },
         {
             "name": ".NET Core Attach",
