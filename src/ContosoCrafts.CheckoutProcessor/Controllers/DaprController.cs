@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CloudNative.CloudEvents;
+using Dapr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,17 +16,8 @@ namespace ContosoCrafts.CheckoutProcessor.Controllers
             this.logger = logger;
         }
 
-        [HttpGet("subscribe")]
-        public ActionResult Subscribe()
-        {
-            var payload = new[]
-            {
-                new {pubsubname="rabbitmqbus", topic= "checkout", route = "checkout" }
-            };
-            return Ok(payload);
-        }
-
         [HttpPost("/checkout")]
+        [Topic("rabbitmqbus", "checkout")]
         public async Task<ActionResult> CheckoutOrder()
         {
             var cloudEvent = await this.Request.ReadCloudEventAsync();
