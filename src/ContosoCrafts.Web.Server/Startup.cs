@@ -19,15 +19,10 @@ namespace ContosoCrafts.Web.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
             services.AddRazorPages();
-            services.AddHttpClient("dapr", c =>
-            {
-                c.BaseAddress = new Uri("http://localhost:3500");
-                c.DefaultRequestHeaders.Add("User-Agent", typeof(Program).Assembly.GetName().Name);
-            });
+            services.AddControllers().AddDapr();
+
             services.AddTransient<IProductService, DaprProductService>();
-            services.AddTransient<IStateService, DaprStateService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

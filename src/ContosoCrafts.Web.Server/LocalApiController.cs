@@ -30,8 +30,8 @@ namespace ContosoCrafts.Web.Server
         [HttpGet("products/{id}")]
         public async Task<ActionResult> GetProduct(string id)
         {
-            await Task.CompletedTask;
-            return Ok();
+            var product = await productService.GetProduct(id);
+            return Ok(product);
         }
 
         [HttpPut("products/{id}")]
@@ -41,17 +41,10 @@ namespace ContosoCrafts.Web.Server
             return Ok();
         }
 
-        [HttpGet("state/{stateKey}")]
-        public async Task<ActionResult> GetState(string stateKey)
+        [HttpPost("checkout")]
+        public async Task<ActionResult> Checkout(IEnumerable<CartItem> items)
         {
-            await Task.CompletedTask;
-            return Ok();
-        }
-
-        [HttpPost("state/{stateKey}")]
-        public async Task<ActionResult> SaveState(string stateKey, Dictionary<string, CartItem> state)
-        {
-            await Task.CompletedTask;
+            await productService.CheckOut(items);
             return Ok();
         }
     }
