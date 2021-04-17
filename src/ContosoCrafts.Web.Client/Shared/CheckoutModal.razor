@@ -1,4 +1,5 @@
 @inject IHttpClientFactory ClientFactory
+@inject ILocalStorageService LocalStorage
 @inject EventAggregator.Blazor.IEventAggregator Aggregator
 @implements EventAggregator.Blazor.IHandle<CheckoutStarted>
 
@@ -14,52 +15,47 @@
             <div class="modal-body">
                 <div class="card">
                     <div class="card-body">
-                      <table class="table table-striped">
-                        <thead class="thead-dark">
-                            <tr>
-                            <th>Title</th>
-                            <th>Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if(Items != null){
-                                @foreach (var item in Items)
+                        <table class="table table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Items != null)
                                 {
-                                    <tr>
-                                    <td>@item.Title</td>
-                                    <td>@item.Quantity</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
+                    @foreach (var item in Items)
+                    {
+    <tr>
+        <td>@item.Title</td>
+        <td>@item.Quantity</td>
+    </tr>
+}}
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                 <button class="btn btn-primary"  data-toggle="modal" data-target="#checkoutModal" @onclick="(e => SubmitCheckout())">Submit</button>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#checkoutModal" @onclick="(e => SubmitCheckout())">Submit</button>
             </div>
         </div>
     </div>
 </div>
 
-@code {    
+@code {
     IEnumerable<CartItem> Items { get; set; }
 
     protected override void OnInitialized()
     {
         Aggregator.Subscribe(this);
     }
+
     public async Task HandleAsync(CheckoutStarted cartUpdated)
     {
         // get state
-        var client = ClientFactory.CreateClient("localapi");
-        var resp = await client.GetAsync($"api/state/cart");
-
-        if (!resp.IsSuccessStatusCode || resp.StatusCode == HttpStatusCode.NoContent) return;
-
-        var responseBody = await resp.Content.ReadAsStringAsync();
-        var state = JsonSerializer.Deserialize<Dictionary<string, CartItem>>(responseBody);
+        var state = await LocalStorage.GetItemAsync<Dictionary<string, CartItem>>("state.cart") ?? new();
         Items = state.Values;
         StateHasChanged();
     }
@@ -69,11 +65,12 @@
         if (Items == null || !Items.Any()) return;
 
         var client = ClientFactory.CreateClient("localapi");
-        //var resp = await client.DeleteAsync($"api/state/cart"); // clear state in the backend
-        await client.PostAsJsonAsync($"api/publish/checkout", Items);
+        await LocalStorage.RemoveItemAsync("state.cart");
+        await client.PostAsJsonAsync($"api/checkout", Items);
 
         Items = null;
         await Aggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = 0 });
-        StateHasChanged();
+       
     }
-}
+
+    }

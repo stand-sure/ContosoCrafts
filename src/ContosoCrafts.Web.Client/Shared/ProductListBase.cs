@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 using ContosoCrafts.Web.Shared.Events;
 using ContosoCrafts.Web.Shared.Models;
 using EventAggregator.Blazor;
@@ -20,6 +19,9 @@ namespace ContosoCrafts.Web.Client.Shared
         private IEventAggregator EventAggregator { get; set; }
 
         [Inject]
+        private ILocalStorageService LocalStorage { get; set; }
+
+        [Inject]
         private IHttpClientFactory ClientFactory { get; set; }
 
         protected IEnumerable<Product> products = null;
@@ -27,12 +29,20 @@ namespace ContosoCrafts.Web.Client.Shared
 
         protected override async Task OnInitializedAsync()
         {
+
             if (products == null)
             {
                 var client = ClientFactory.CreateClient("localapi");
-                //products = await client.GetFromJsonAsync<IEnumerable<Product>>("/api/products");
-                products = await client.GetFromJsonAsync<IEnumerable<Product>>("/data/products.json");
+                products = await client.GetFromJsonAsync<IEnumerable<Product>>("/api/products");
+                //products = await client.GetFromJsonAsync<IEnumerable<Product>>("/data/products.json");
             }
+
+            var state = await LocalStorage.GetItemAsync<Dictionary<string, CartItem>>("state.cart") ?? new();
+            if (state.Any())
+            {
+                await EventAggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = state.Keys.Count });
+            }
+
         }
 
         protected void SelectProduct(string productId)
@@ -56,9 +66,8 @@ namespace ContosoCrafts.Web.Client.Shared
         protected async Task AddToCart(string productId, string title)
         {
             // get state
-            var client = ClientFactory.CreateClient("localapi");
-            Dictionary<string, CartItem> state = await client.GetFromJsonAsync<Dictionary<string, CartItem>>($"api/state/cart");
 
+            var state = await LocalStorage.GetItemAsync<Dictionary<string, CartItem>>("state.cart") ?? new();
             if (state.ContainsKey(productId))
             {
                 // Product already in cart
@@ -72,8 +81,8 @@ namespace ContosoCrafts.Web.Client.Shared
                 state[productId] = new CartItem { Title = title, Quantity = 1 };
             }
 
-            // persist state in dapr           
-            await client.PostAsJsonAsync($"/api/state/cart", state);
+            // persist state in dapr                       
+            await LocalStorage.SetItemAsync("state.cart", state);
             await EventAggregator.PublishAsync(new ShoppingCartUpdated { ItemCount = state.Keys.Count });
         }
     }
