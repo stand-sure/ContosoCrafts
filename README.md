@@ -1,4 +1,4 @@
-# ContosoCrafts (Dapr Edition)
+# ContosoCrafts (Dapr .NET SDK Edition)
 
 ## Spinning up the environment
 
