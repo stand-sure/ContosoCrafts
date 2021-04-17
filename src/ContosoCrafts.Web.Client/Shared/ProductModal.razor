@@ -75,9 +75,8 @@
         }
     }
 
-    protected async Task SubmitRating(MouseEventArgs eventArgs, int rating)
+    protected  Task SubmitRating(MouseEventArgs eventArgs, int rating)
     {
-        await OnSubmitRating.InvokeAsync(rating);
-        StateHasChanged();
+        return OnSubmitRating.InvokeAsync(rating);
     }
 }
