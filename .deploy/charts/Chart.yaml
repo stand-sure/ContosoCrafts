@@ -1,0 +1,21 @@
+apiVersion: v1
+name: "contosocrafts"
+description: "Contoso Crafts DAPR Edition"
+version: 0.1.0
+appVersion: 0.1.0
+maintainers:
+    - name: "Cecil Phillip"
+      url: "https://twitter.com/cecilphillip"
+
+dependencies:
+    - name: redis
+      version: 14.0.1
+      repository: https://charts.bitnami.com/bitnami
+
+    - name: mongodb
+      version: 10.12.x
+      repository: https://charts.bitnami.com/bitnami
+
+    - name: rabbitmq
+      version: 10.12.x
+      repository: https://charts.bitnami.com/bitnami

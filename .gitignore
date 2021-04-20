@@ -247,3 +247,6 @@ paket-files/
 
 # application temp directory
 contoso_tmp
+
+*.tgz
+.deploy/charts/requirements.lock
