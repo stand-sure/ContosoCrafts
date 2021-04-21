@@ -1,0 +1,34 @@
+mongodb:
+  architecture: "standalone"
+  useStatefulSet: true
+  auth:
+    username: admin
+    password: admin
+    rootPassword: admin
+    database: admin
+  service:
+    nameOverride: mongo_service
+  initdbScripts:
+    populate.sh: |
+      mongoimport --db=contosocrafts --collection=products --file=/data/products.json --jsonArray --upsertFields=Id --mode=upsert --username=admin --password=admin --authenticationDatabase=admin
+  extraVolumeMounts:
+    - name: initialdata
+      mountPath: /data
+      readOnly: true
+  extraVolumes:
+    - name: initialdata
+      secret:
+        secretName: mongodatasecrets
+
+redis:
+  architecture: "standalone"
+  auth:
+    existingSecret: redissecrets
+    existingSecretPasswordKey: redisPassword
+
+rabbitmq:
+  auth:
+    username: demo
+    existingPasswordSecret: rabbitmqsecrets
+    existingErlangSecret: rabbitmqsecrets
+  extraPlugins: "rabbitmq_amqp1_0 rabbitmq_shovel_management"

@@ -56,9 +56,8 @@ services:
     # in-memory setup
     command: >-
       server -dev -dev-root-token-id="dapr" -log-level=warn
-      -dev-listen-address="0.0.0.0:8200" 
-      
-      
+      -dev-listen-address="0.0.0.0:8200"
+
     ports:
       - "8200:8200"
 
