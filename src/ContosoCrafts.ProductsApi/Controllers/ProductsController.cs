@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using ContosoCrafts.ProductsApi.Models;
 using ContosoCrafts.ProductsApi.Services;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContosoCrafts.ProductsApi.Controllers
@@ -34,12 +36,6 @@ namespace ContosoCrafts.ProductsApi.Controllers
         {
             await _productService.AddRating(request.ProductId, request.Rating);
             return Ok();
-        }
-
-        public class RatingRequest
-        {
-            public string ProductId { get; set; }
-            public int Rating { get; set; }
         }
     }
 }
