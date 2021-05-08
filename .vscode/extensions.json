@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-dotnettools.csharp",        
+        "ms-dotnettools.blazorwasm-companion",
+        "ms-azuretools.vscode-docker",
+        "mongodb.mongodb-vscode",
+        "humao.rest-client",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
+    ]
+}
