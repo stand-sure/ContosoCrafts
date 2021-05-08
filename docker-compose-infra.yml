@@ -39,28 +39,6 @@ services:
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
 
-  ##### Hashicorp Vault #####
-  vault:
-    image: vault:1.6.3
-    container_name: vault_service
-    cap_add:
-      - IPC_LOCK
-    environment:
-      - VAULT_API_ADDR=http://vault_service:8200
-    volumes:
-      - ./vault.hcl:/etc/vault/config.hcl
-      - ./contoso_tmp/vault/file:/vault/file
-      - ./contoso_tmp/vault/logs:/vault/logs
-    # hcl configuration
-    # command: server -config=/etc/vault/config.hcl #
-    # in-memory setup
-    command: >-
-      server -dev -dev-root-token-id="dapr" -log-level=warn
-      -dev-listen-address="0.0.0.0:8200"
-
-    ports:
-      - "8200:8200"
-
   ##### Zipkin #####
   zipkin:
     container_name: "zipkin_service"
